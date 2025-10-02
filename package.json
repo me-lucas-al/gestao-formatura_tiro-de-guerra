@@ -6,22 +6,38 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "docker-compose": "docker compose up -d",
+    "generate": "prisma generate",
+    "migrate": "prisma migrate",
+    "studio": "prisma studio",
+    "format": "pnpx prisma format",
+    "seed": "pnpx prisma db seed"
   },
   "dependencies": {
+    "@fastify/jwt": "^10.0.0",
+    "@prisma/client": "^6.16.2",
+    "bcrypt": "^6.0.0",
+    "fastify": "^5.6.1",
+    "fastify-jwt": "^4.2.0",
+    "lucide-react": "^0.544.0",
+    "next": "15.5.4",
+    "next-auth": "^4.24.11",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.4"
+    "zod": "^4.1.11"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
-    "@eslint/eslintrc": "^3"
+    "prisma": "^6.16.2",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
