@@ -1,9 +1,0 @@
-model Admin {
-  id        Int      @id @default(autoincrement())
-  name      String
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  atiradores Atirador[]
-}

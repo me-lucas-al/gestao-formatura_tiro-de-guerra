@@ -1,8 +1,0 @@
-model Atirador {
-    id        Int   @id @default(autoincrement())
-    name      String
-    familyMemberQuantity Int
-    adminId   Int
-    admin     Admin  @relation(fields: [adminId], references: [id])
-    payments Payment[]
-}
