@@ -1,35 +1,39 @@
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
-import prisma from "../src/lib/prisma";
+
+const prisma = new PrismaClient();
 
 const adminData = [
   {
-    username: "victor",
+    id: 1,
+    name: "victor",
     password: bcrypt.hashSync("admin123", 10),
   },
   {
-    username: "de_souza",
+    id: 2,
+    name: "de_souza",
     password: bcrypt.hashSync("admin123", 10),
   },
   {
-    username: "assis",
+    id: 3,
+    name: "assis",
     password: bcrypt.hashSync("admin123", 10),
   },
   {
-    username: "muniz",
+    id: 4,
+    name: "muniz",
     password: bcrypt.hashSync("admin123", 10),
   },
 ];
 
 async function main() {
-  console.log(`Iniciando o seed de ${adminData.length} administradores...`);
-  
   for (const admin of adminData) {
     const user = await prisma.admin.upsert({
-      where: { username: admin.username }, 
+      where: { id: admin.id },
       update: {},
-      create: admin, 
+      create: admin,
     });
-    console.log(`Administrador ${user.username} criado/verificado.`);
+    console.log(`Administrador ${user.name} criado/verificado.`);
   }
 }
 

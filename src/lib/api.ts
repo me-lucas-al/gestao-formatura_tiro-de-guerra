@@ -6,15 +6,21 @@ function getToken() {
 
 export async function apiGet(endpoint: string) {
   const token = getToken();
+  const url = `${API_URL}${endpoint}`;
 
-  const res = await fetch(`${API_URL}${endpoint}`, {
+  console.log("🌐 GET:", url);
+
+  const res = await fetch(url, {
     headers: {
       "Content-Type": "application/json",
       Authorization: token ? `Bearer ${token}` : "",
     },
   });
 
+  console.log("📡 GET Response status:", res.status);
+
   if (res.status === 401) {
+    console.warn("⚠️ Token inválido ou expirado. Redirecionando...");
     localStorage.removeItem("token");
     window.location.href = "/";
     return null;
@@ -25,8 +31,12 @@ export async function apiGet(endpoint: string) {
 
 export async function apiPost(endpoint: string, body: any, withAuth = true) {
   const token = withAuth ? getToken() : null;
+  const url = `${API_URL}${endpoint}`;
 
-  const res = await fetch(`${API_URL}${endpoint}`, {
+  console.log("🌐 POST:", url);
+  console.log("📦 Body:", body);
+
+  const res = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -35,10 +45,17 @@ export async function apiPost(endpoint: string, body: any, withAuth = true) {
     body: JSON.stringify(body),
   });
 
+  console.log("📡 POST Response status:", res.status);
+
   if (res.status === 401) {
+    console.warn("⚠️ Token inválido ou expirado. Redirecionando...");
     localStorage.removeItem("token");
     window.location.href = "/";
     return null;
+  }
+
+  if (res.status === 404) {
+    console.error("❌ Erro 404 — rota não encontrada:", url);
   }
 
   return res.json();

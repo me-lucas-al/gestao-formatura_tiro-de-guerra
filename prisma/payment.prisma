@@ -1,9 +1,0 @@
-model Payment {
-  id         Int   @id @default(autoincrement())
-  amount     Float
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  isPaid     Boolean  @default(false)
-  atiradorId Int
-  atirador      Atirador     @relation(fields: [atiradorId], references: [id])
-}
