@@ -13,6 +13,19 @@ datasource formatura_db {
   url      = env("DATABASE_URL")
 }
 
+enum PaymentStatus {
+  PENDING
+  PAID
+  CANCELED
+}
+
+enum PaymentMethod {
+  PIX
+  CREDIT_CARD
+  DEBIT_CARD
+  CASH
+}
+
 model Admin {
   id        Int      @id @default(autoincrement())
   name      String
@@ -24,18 +37,23 @@ model Admin {
 }
 model Payment {
   id         Int   @id @default(autoincrement())
-  amount     Float
+  value     Float
+  status    PaymentStatus @default(PENDING)
+  method    PaymentMethod
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   isPaid     Boolean  @default(false)
-  atiradorId Int
-  atirador      Atirador     @relation(fields: [atiradorId], references: [id])
+  atiradorId Int @unique
+  atirador   Atirador @relation(fields: [atiradorId], references: [id])
 }
 model Atirador {
     id        Int   @id @default(autoincrement())
     name      String
     familyMemberQuantity Int
+    number    Int  
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
     adminId   Int
     admin     Admin  @relation(fields: [adminId], references: [id])
-    payments Payment[]
+    payment Payment?
 }

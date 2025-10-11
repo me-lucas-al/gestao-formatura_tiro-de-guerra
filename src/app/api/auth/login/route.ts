@@ -19,7 +19,6 @@ export async function POST(req: Request) {
   });
 
   const response = NextResponse.json({ message: "Login realizado com sucesso" });
-  response.cookies.set("token", token, { httpOnly: true, secure: true, path: "/" });
-
+  response.cookies.set("token", token, { httpOnly: true, secure: true, sameSite: "strict", path: "/" });
   return response;
 }

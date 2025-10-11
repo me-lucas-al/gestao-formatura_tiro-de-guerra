@@ -11,14 +11,14 @@ import { AxiosError } from "axios";
 export default function Login() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const { mutate, isPending, error } = useLogin();
+  const { mutate: data, isPending, error } = useLogin();
 
   const apiError = error as AxiosError<{ error: string }>;
   const errorMessage = apiError?.response?.data?.error;
 
   const handleSubmit = () => {
     if (!name || !password) return;
-    mutate({ adminName: name, password });
+    data({ adminName: name, password });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {

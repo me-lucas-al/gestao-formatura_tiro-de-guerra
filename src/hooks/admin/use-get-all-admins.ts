@@ -1,11 +1,11 @@
 import api from "@/lib/axios/client";
 import { useQuery } from "@tanstack/react-query";
 
-export function useGetAdmin() {
+export function useGetAllAdmins() {
   return useQuery({
-    queryKey: ["admin-session"],
+    queryKey: ["admin-list"],
     queryFn: async () => {
-      const response = await api.get<Admin>("/admin/get-admin");
+      const response = await api.get<Admin[]>("/admin/get-all");
       return response.data;
     },
     retry: false,

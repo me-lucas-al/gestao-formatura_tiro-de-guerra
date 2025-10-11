@@ -2,11 +2,15 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSession } from "@/hooks/use-session";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { useGetAllAdmins } from "@/hooks/admin/use-get-all-admins";
 
 export default function Dashboard() {
-  const { admin, isLoading } = useSession();
-
-  if (isLoading || !admin) {
+  const { admin } = useSession();
+  const { data: admins, isLoading } = useGetAllAdmins();
+  console.log(admins);
+  if (isLoading || !admins) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p>Carregando...</p>
@@ -16,15 +20,30 @@ export default function Dashboard() {
 
   return (
     <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">Bem-vindo, {admin.name}!</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold">Bem-vindo, {admin?.name}!</h1>
+
+        <Link href="/atiradores">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            Adicionar Atirador
+          </Button>
+        </Link>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Total de Atiradores</CardTitle>
+            <CardTitle>Total de Atiradores que já pagaram</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{admin.atiradores.length || 0}</p>
+            <p className="text-2xl font-bold">
+              {
+          admins
+            .flatMap(admin => admin.atiradores)
+            .filter(atirador => atirador.payments?.some(payment => payment.isPaid))
+            .length
+              }
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -49,14 +68,11 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
+                  {/* 
                   {admin.atiradores.map((atirador) => (
                     <tr key={atirador.id}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {atirador.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {atirador.familyMemberQuantity}
-                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">{atirador.name}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{atirador.familyMemberQuantity}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {atirador.payments.some((p) => p.isPaid) ? (
                           <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
@@ -69,7 +85,8 @@ export default function Dashboard() {
                         )}
                       </td>
                     </tr>
-                  ))}
+                  ))} 
+                  */}
                 </tbody>
               </table>
             </div>
