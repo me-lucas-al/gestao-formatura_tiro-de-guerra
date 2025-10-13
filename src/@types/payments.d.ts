@@ -1,16 +1,6 @@
-type Payment = {
-  id: number;
-  amount: number;
-  isPaid: boolean;
-  atiradorId: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
 enum PaymentStatus {
   "PENDING",
   "PAID",
-  "CANCELED"
 }
 
 enum PaymentMethod {
@@ -18,4 +8,17 @@ enum PaymentMethod {
   "CREDIT_CARD",
   "DEBIT_CARD",
   "CASH"
+}
+
+type Payment = {
+  id: number
+  value: number
+  status: PaymentStatus
+  method: PaymentMethod
+  createdAt: Date
+  updatedAt: Date
+  atiradorId?: number | null
+  familyMemberId?: number | null
+  familyMember?: FamilyMember | null
+  atirador?: Atirador | null
 }

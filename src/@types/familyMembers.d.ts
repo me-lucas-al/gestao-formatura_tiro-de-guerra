@@ -1,13 +1,11 @@
-type Atirador = {
+type FamilyMember = {
   id: number
   name: string
-  number: number
+  atiradorId: number
   isPaid: boolean
   createdAt: Date
   updatedAt: Date
-  adminId: number
   paymentId?: number | null
   payment?: Payment | null
-  admin: Admin
-  familyMembers: FamilyMember[]
+  atirador: Atirador
 }
