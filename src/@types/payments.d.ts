@@ -1,13 +1,14 @@
 enum PaymentStatus {
-  "PENDING",
-  "PAID",
+  PENDING,
+  PAID,
+  FIRST_INSTALLMENT_PAID,
 }
 
 enum PaymentMethod {
-  "PIX",
-  "CREDIT_CARD",
-  "DEBIT_CARD",
-  "CASH"
+  PIX,
+  CREDIT_CARD,
+  DEBIT_CARD,
+  CASH
 }
 
 type Payment = {

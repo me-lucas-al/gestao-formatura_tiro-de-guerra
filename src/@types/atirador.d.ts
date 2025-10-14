@@ -2,7 +2,6 @@ type Atirador = {
   id: number
   name: string
   number: number
-  isPaid: boolean
   createdAt: Date
   updatedAt: Date
   adminId: number

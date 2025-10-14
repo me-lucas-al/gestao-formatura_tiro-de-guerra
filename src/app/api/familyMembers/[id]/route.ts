@@ -1,7 +1,8 @@
+// src/app/api/familyMembers/[id]/route.ts
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
-import { updateFamilyMemberSchema } from '@/schemas/login/update-family-members-schema';
+import { updateFamilyMemberSchema } from '@/schemas/family-members/update-family-members-schema';
 import { Prisma } from '@prisma/client';
 
 export async function PUT(
@@ -24,13 +25,8 @@ export async function PUT(
     if (!familyMemberExists) {
       return NextResponse.json(
         { message: `Familiar com ID ${familyMemberId} não encontrado.` },
+        { status: 404 }
       );
-    }
-
-    const paymentUpdatePayload: Prisma.PaymentUpdateInput = {};
-
-    if (parsedData.paymentValue !== undefined) {
-      paymentUpdatePayload.value = parsedData.paymentValue;
     }
 
     const updatedFamilyMember = await prisma.familyMember.update({
@@ -39,10 +35,16 @@ export async function PUT(
       },
       data: {
         name: parsedData.name,
-        payment:
-          Object.keys(paymentUpdatePayload).length > 0
-            ? { update: paymentUpdatePayload }
-            : undefined,
+        age: parsedData.age,
+        payment: parsedData.payment
+          ? {
+              update: {
+                status: parsedData.payment.status,
+                value: parsedData.payment.value,
+                method: parsedData.payment.method,
+              },
+            }
+          : undefined,
       },
       include: {
         payment: true,

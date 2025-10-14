@@ -1,5 +1,5 @@
 import api from "@/lib/axios/client";
-import { CreateFamilyMemberData } from "@/schemas/login/create-family-member-schema";
+import { CreateFamilyMemberData } from "@/schemas/family-members/create-family-member-schema";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -9,7 +9,7 @@ export function useCreateFamilyMember() {
 
   return useMutation({
     mutationFn: async (data: CreateFamilyMemberData) => {
-      return api.post("/api/familyMembers", data);
+      return api.post("/familyMembers", data);
     },
     onSuccess: () => {
       router.push("/dashboard");

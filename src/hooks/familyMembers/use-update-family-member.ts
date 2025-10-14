@@ -1,8 +1,8 @@
 import api from "@/lib/axios/client";
-import { CreateFamilyMemberData } from "@/schemas/login/create-family-member-schema";
+import { CreateFamilyMemberData } from "@/schemas/family-members/create-family-member-schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export function useUpdateFamilyMemberById() {
+export function useUpdateFamilyMember() {
   const queryClient = useQueryClient();
 
   return useMutation({

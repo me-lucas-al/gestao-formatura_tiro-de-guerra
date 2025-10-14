@@ -1,8 +1,8 @@
 type FamilyMember = {
   id: number
   name: string
+  age: number
   atiradorId: number
-  isPaid: boolean
   createdAt: Date
   updatedAt: Date
   paymentId?: number | null

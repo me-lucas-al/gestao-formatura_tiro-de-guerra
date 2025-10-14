@@ -16,7 +16,7 @@ datasource formatura_db {
 enum PaymentStatus {
   PENDING
   PAID
-  CANCELED
+  FIRST_INSTALLMENT_PAID
 }
 
 enum PaymentMethod {
@@ -51,7 +51,6 @@ model Atirador {
     id        Int   @id @default(autoincrement())
     name      String
     number    Int  
-    isPaid    Boolean ? @default(false)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     adminId   Int ?
@@ -64,8 +63,8 @@ model Atirador {
 model FamilyMember {
   id        Int   @id @default(autoincrement())
   name      String
+  age        Int
   atiradorId Int
-  isPaid     Boolean  ? @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   paymentId Int ? @unique

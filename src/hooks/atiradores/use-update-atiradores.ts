@@ -10,7 +10,7 @@ export function useUpdateAtirador() {
       data,
     }: {
       id: number;
-      data: AtiradorUpdateData;
+      data: AtiradorCreateData;
     }) => {
       const response = await api.put(`/atiradores/${id}`, {
         ...data,
@@ -19,7 +19,7 @@ export function useUpdateAtirador() {
     },
     onSettled: (data) => {
       queryClient.invalidateQueries({
-        queryKey: ["sectors"],
+        queryKey: ["atiradores"],
       });
     },
   });

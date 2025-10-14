@@ -1,5 +1,5 @@
 import api from "@/lib/axios/client";
-import { SignInData } from "@/schemas/family-members/sign-in";
+import { SignInData } from "@/schemas/login/sign-in";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
