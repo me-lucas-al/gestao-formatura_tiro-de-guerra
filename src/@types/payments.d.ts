@@ -1,10 +1,10 @@
-enum PaymentStatus {
+type PaymentStatus = {
   PENDING,
   PAID,
   FIRST_INSTALLMENT_PAID,
 }
 
-enum PaymentMethod {
+type PaymentMethod = {
   PIX,
   CREDIT_CARD,
   DEBIT_CARD,

@@ -1,9 +1,7 @@
-import { PaymentMethod } from "@prisma/client";
+import { PaymentMethod, PaymentStatus } from "@prisma/client";
 import { z } from "zod";
 
 export const createPaymentSchema = z.object({
-  id: z.coerce.number().optional(),
-
   status: z
     .enum(Object.values(PaymentStatus) as [string, ...string[]])
     .optional(),
@@ -18,4 +16,8 @@ export const createPaymentSchema = z.object({
   familyMemberId: z.coerce.number().optional(),
 });
 
+export const updatePaymentSchema = createPaymentSchema.extend({
+  id: z.coerce.number(),
+});
 export type CreatePaymentData = z.infer<typeof createPaymentSchema>;
+export type UpdatePaymentData = z.infer<typeof updatePaymentSchema>;

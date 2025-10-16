@@ -1,7 +1,8 @@
 // src/app/api/familyMembers/route.ts
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { createFamilyMemberSchema } from "@/schemas/family-members/create-family-member-schema";
+import { createFamilyMemberSchema } from "@/schemas/family-members/family-member-schema";
+import { z } from "zod";
 
 export async function POST(request: Request) {
   try {
@@ -15,54 +16,51 @@ export async function POST(request: Request) {
       );
     }
 
-    const data = parsed.data;
+    const { name, age, atiradorId, payment } = parsed.data;
 
     const atirador = await prisma.atirador.findUnique({
-      where: { id: data.atiradorId },
+      where: { id: atiradorId },
     });
 
     if (!atirador) {
       return NextResponse.json(
-        { message: `Atirador com ID ${data.atiradorId} não encontrado.` },
+        { message: `Atirador com ID ${atiradorId} não encontrado.` },
         { status: 404 }
       );
     }
 
-    // 1️⃣ Cria o familiar
-    const familyMember = await prisma.familyMember.create({
+    // Cria o familiar e o pagamento em uma única operação atômica
+    const newFamilyMember = await prisma.familyMember.create({
       data: {
-        name: data.name,
-        age: data.age,
-        atiradorId: data.atiradorId,
+        name,
+        age,
+        atirador: {
+          connect: { id: atiradorId },
+        },
+        payment: {
+          create: {
+            status: payment.status,
+            value: payment.value,
+            method: payment.method,
+          },
+        },
+      },
+      include: {
+        payment: true,
+        atirador: true,
       },
     });
 
-    // 2️⃣ Se houver pagamento, cria e associa
-    let payment = null;
-    if (data.payment) {
-      payment = await prisma.payment.create({
-        data: {
-          status: data.payment.status ?? PaymentStatus.PENDING,
-          value: data.payment.value ?? 0,
-          method: data.payment.method ?? PaymentMethod.PIX,
-          familyMemberId: familyMember.id,
-        },
-      });
-
-      await prisma.familyMember.update({
-        where: { id: familyMember.id },
-        data: { paymentId: payment.id },
-      });
-    }
-
-    // 3️⃣ Retorna com include
-    const newFamilyMember = await prisma.familyMember.findUnique({
-      where: { id: familyMember.id },
-      include: { payment: true, atirador: true },
-    });
+    console.log("Familiar criado com sucesso:", newFamilyMember);
 
     return NextResponse.json(newFamilyMember, { status: 201 });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { message: "Dados inválidos.", issues: error.format() },
+        { status: 400 }
+      );
+    }
     console.error("Erro ao criar familiar:", error);
     return NextResponse.json(
       { message: "Erro interno ao processar a requisição." },

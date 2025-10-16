@@ -1,27 +1,25 @@
 import { useState } from "react";
 
-type FamilyMember = {
-  id: number;
-  name: string;
-};
-
 export function useFamilyMemberModal() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
-  const [selectedAtiradorId, setSelectedAtiradorId] = useState<number | null>(null);
-  const [selectedFamilyMember, setSelectedFamilyMember] = useState<FamilyMember | null>(null);
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [selectedAtiradorId, setSelectedAtiradorId] = useState<number | null>(
+    null
+  );
+  const [selectedFamilyMember, setSelectedFamilyMember] =
+    useState<FamilyMember | null>(null);
 
   const openCreateModal = (atiradorId: number) => {
-    setModalMode('create');
+    setModalMode("create");
     setSelectedAtiradorId(atiradorId);
     setSelectedFamilyMember(null);
     setIsModalOpen(true);
   };
 
-  const openEditModal = (member: FamilyMember) => {
-    setModalMode('edit');
+  const openEditModal = (atiradorId: number, member: FamilyMember) => {
+    setSelectedAtiradorId(atiradorId);
     setSelectedFamilyMember(member);
-    setSelectedAtiradorId(null);
+    setModalMode("edit");
     setIsModalOpen(true);
   };
 

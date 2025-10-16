@@ -1,9 +1,7 @@
-// src/app/api/familyMembers/[id]/route.ts
+
 import { NextResponse } from 'next/server';
-import { z } from 'zod';
 import prisma from '@/lib/prisma';
-import { updateFamilyMemberSchema } from '@/schemas/family-members/update-family-members-schema';
-import { Prisma } from '@prisma/client';
+import { updateFamilyMemberSchema } from '@/schemas/family-members/family-member-schema';
 
 export async function PUT(
   request: Request,
@@ -11,13 +9,26 @@ export async function PUT(
 ) {
   try {
     const familyMemberId = parseInt(params.id, 10);
+
     if (isNaN(familyMemberId)) {
       return NextResponse.json({ message: 'ID inválido.' }, { status: 400 });
     }
 
-    const body = await request.json();
-    const parsedData = updateFamilyMemberSchema.parse(body);
+    console.log('ID do familiar a ser atualizado:', familyMemberId, " com o tipo ", typeof familyMemberId);
 
+    const body = await request.json();
+    const parsed = updateFamilyMemberSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { message: "Dados inválidos.", issues: parsed.error.format() },
+        { status: 400 }
+      );
+    }
+
+    const { name, age, payment } = parsed.data;
+
+  
     const familyMemberExists = await prisma.familyMember.findUnique({
       where: { id: familyMemberId },
     });
@@ -34,32 +45,26 @@ export async function PUT(
         id: familyMemberId,
       },
       data: {
-        name: parsedData.name,
-        age: parsedData.age,
-        payment: parsedData.payment
+        name,
+        age,
+        payment: payment
           ? {
               update: {
-                status: parsedData.payment.status,
-                value: parsedData.payment.value,
-                method: parsedData.payment.method,
+                status: payment.status,
+                value: payment.value,
+                method: payment.method,
               },
             }
           : undefined,
       },
       include: {
         payment: true,
+        atirador: true,
       },
     });
 
     return NextResponse.json(updatedFamilyMember, { status: 200 });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { message: 'Dados inválidos.', issues: error.format() },
-        { status: 400 }
-      );
-    }
-
     console.error('Erro ao atualizar familiar:', error);
     return NextResponse.json(
       { message: 'Erro interno ao processar a requisição.' },

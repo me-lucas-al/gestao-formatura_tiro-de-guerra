@@ -1,25 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import { useGetAllAtiradores } from "@/hooks/atiradores/use-get-all-atiradores";
 import DashboardHeader from "@/modules/dashboard/header";
-import AtiradoresList from "@/modules/dashboard/atiradores-list";
-import { useFamilyMemberModal } from "@/lib/utils/use-modal";
-import FamilyMemberModal from "@/modules/dashboard/family-modal";
+import AtiradoresList from "@/modules/atiradores/list";
+import { DashboardProvider } from "@/contexts/dashboard-context";
+import FamilyMemberModalWrapper from "@/modules/family-member/wrapper";
+import { FamilyMemberModalProvider } from "@/contexts/family-member-modal-context";
+import FamilyMembersList from "@/modules/family-member/list";
 
 export default function Dashboard() {
   const { data: atiradores, isLoading } = useGetAllAtiradores();
-  const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
-
-  const {
-    isModalOpen,
-    modalMode,
-    selectedAtiradorId,
-    selectedFamilyMember,
-    openCreateModal,
-    openEditModal,
-    closeModal,
-  } = useFamilyMemberModal();
 
   if (isLoading || !atiradores) {
     return (
@@ -29,31 +19,16 @@ export default function Dashboard() {
     );
   }
 
-  const handleRowClick = (atiradorId: number) => {
-    setExpandedRowId(expandedRowId === atiradorId ? null : atiradorId);
-  };
-
   return (
-    <div className="container mx-auto p-4 md:p-8">
-      <DashboardHeader />
-
-      <AtiradoresList
-          atiradores={atiradores}
-          expandedRowId={expandedRowId}
-          handleRowClick={handleRowClick}
-          onAddFamilyMember={openCreateModal} 
-          onEditFamilyMember={openEditModal}
-        />
-
-        {isModalOpen && (
-          <FamilyMemberModal 
-          isOpen={isModalOpen}
-          onClose={closeModal} 
-          mode={modalMode}
-          atiradorId={selectedAtiradorId}
-          familyMemberData={selectedFamilyMember}
-        />
-      )}
-    </div>
+    <DashboardProvider>
+      <FamilyMemberModalProvider>
+        <div className="container mx-auto p-4 md:p-8">
+          <DashboardHeader />
+          <AtiradoresList />
+          <FamilyMembersList />
+          <FamilyMemberModalWrapper />
+        </div>
+      </FamilyMemberModalProvider>
+    </DashboardProvider>
   );
 }

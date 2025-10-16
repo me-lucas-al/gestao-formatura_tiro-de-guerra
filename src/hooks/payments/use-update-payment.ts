@@ -1,10 +1,9 @@
 import api from "@/lib/axios/client";
-import { CreateFamilyMemberData } from "@/schemas/family-members/family-member-schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { CreatePaymentData } from "@/schemas/payment/create-payment-schema";
 
-
-export function useUpdateFamilyMember() {
+export function useUpdatePayment() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -13,23 +12,22 @@ export function useUpdateFamilyMember() {
       data,
     }: {
       id: number;
-      data: CreateFamilyMemberData;
+      data: CreatePaymentData;
     }) => {
-      const response = await api.put(`/familyMembers/${id}`, {
+      const response = await api.put(`/payments/${id}`, {
         ...data,
       });
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: ["family-members"],
+        queryKey: ["payments"],
       });
-      toast.success("Familiar atualizado com sucesso!");
+      toast.success("Pagamento atualizado com sucesso!");   
     },
     onError: (error: any) => {
-      toast.error("Erro ao atualizar familiar.");
+      toast.error("Erro ao atualizar pagamento.");
       console.error(error)
     }
-    
   });
 }

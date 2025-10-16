@@ -1,5 +1,5 @@
 import api from "@/lib/axios/client";
-import { CreateFamilyMemberData } from "@/schemas/family-members/create-family-member-schema";
+import { CreateFamilyMemberData } from "@/schemas/family-members/family-member-schema";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -17,6 +17,7 @@ export function useCreateFamilyMember() {
     },
     onError: (error: any) => {
       toast.error("Erro ao criar o membro da família.");
+      console.error(error);
     },
   });
 }
