@@ -1,8 +1,6 @@
 import 'dotenv/config'
-import { PrismaClient } from "@prisma/client";
+import { db } from "@/lib/prisma";
 import bcrypt from "bcrypt";
-
-const prisma = new PrismaClient();
 
 const adminData = [
   {
@@ -132,7 +130,7 @@ const atiradorData = [
 async function main() {
   console.log("Iniciando seed de Administradores...");
   for (const admin of adminData) {
-    const user = await prisma.admin.upsert({
+    const user = await db.admin.upsert({
       where: { id: admin.id },
       update: {},
       create: admin,
@@ -142,7 +140,7 @@ async function main() {
 
   console.log("\nIniciando seed dos atiradores...");
   for (const atirador of atiradorData) {
-    const user = await prisma.atirador.upsert({
+    const user = await db.atirador.upsert({
       where: { id: atirador.id },
       update: {},
       create: atirador,
@@ -158,5 +156,5 @@ main()
   })
   .finally(async () => {
     console.log("\nSeed finalizado.");
-    await prisma.$disconnect();
+    await db.$disconnect();
   });
