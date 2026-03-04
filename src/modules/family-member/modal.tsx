@@ -1,4 +1,6 @@
-import { useFamilyMemberModal } from "@/lib/utils/use-modal";
+"use client";
+
+import { useFamilyMemberModal } from "@/contexts/family-member-modal-context";
 import {
   Dialog,
   DialogContent,
@@ -8,9 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, useEffect } from "react";
-import { useCreateFamilyMember } from "@/hooks/familyMembers/use-create-family-member";
-import { useUpdateFamilyMember } from "@/hooks/familyMembers/use-update-family-member";
+import { useState, useEffect, useTransition } from "react";
+import { createFamilyMember, updateFamilyMember } from "@/actions/family-members";
 
 export default function FamilyMemberModal() {
   const {
@@ -23,9 +24,7 @@ export default function FamilyMemberModal() {
 
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
-
-  const { mutate: createFamilyMember, isPending: isCreating } = useCreateFamilyMember();
-  const { mutate: updateFamilyMember, isPending: isUpdating } = useUpdateFamilyMember();
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (modalMode === "edit" && selectedFamilyMember) {
@@ -42,37 +41,35 @@ export default function FamilyMemberModal() {
 
     if (!selectedAtiradorId) return;
 
-    if (modalMode === "create") {
-      createFamilyMember(
-        {
+    startTransition(async () => {
+      if (modalMode === "create") {
+        const res = await createFamilyMember({
           atiradorId: selectedAtiradorId,
           name,
           age: parseInt(age),
-        },
-        {
-          onSuccess: () => {
-            closeModal();
-            setName("");
-            setAge("");
-          },
+          payment: {
+            status: "PENDING",
+            value: 0,
+            method: "CASH" // Default method, adjust as needed or pass from form
+          }
+        });
+        if (res.success) {
+          closeModal();
+          setName("");
+          setAge("");
         }
-      );
-    } else if (modalMode === "edit" && selectedFamilyMember) {
-      updateFamilyMember(
-        {
-          id: selectedFamilyMember.id,
+      } else if (modalMode === "edit" && selectedFamilyMember) {
+        const res = await updateFamilyMember(selectedFamilyMember.id, {
           name,
           age: parseInt(age),
-        },
-        {
-          onSuccess: () => {
-            closeModal();
-            setName("");
-            setAge("");
-          },
+        });
+        if (res.success) {
+          closeModal();
+          setName("");
+          setAge("");
         }
-      );
-    }
+      }
+    });
   };
 
   return (
@@ -110,8 +107,8 @@ export default function FamilyMemberModal() {
             <Button type="button" variant="outline" onClick={closeModal}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={isCreating || isUpdating}>
-              {isCreating || isUpdating ? "Salvando..." : "Salvar"}
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Salvando..." : "Salvar"}
             </Button>
           </div>
         </form>

@@ -1,32 +1,26 @@
 "use client";
 
-import { createContext, useContext } from "react";
-import { useGetAdmin } from "./admin/use-get-admin";
+import { createContext, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { toast } from "react-toastify";
 
 type SessionContextType = {
-  admin: Admin | undefined;
+  admin: any | undefined;
   isLoading: boolean;
 };
 
 const SessionContext = createContext<SessionContextType | undefined>(undefined);
 
-export function SessionProvider({ children }: { children: React.ReactNode }) {
+export function SessionProvider({ children, admin }: { children: React.ReactNode, admin: any }) {
   const router = useRouter();
-  const { data: admin, isLoading, isError } = useGetAdmin();
 
-  console.log("admin: ", admin)
   useEffect(() => {
-    if (!isLoading && isError) {
+    if (!admin) {
       router.replace("/");
-      toast.error("Sessão expirada. Faça login novamente.");
     }
-  }, [isLoading, isError, router]);
+  }, [admin, router]);
 
   return (
-    <SessionContext.Provider value={{ admin, isLoading }}>
+    <SessionContext.Provider value={{ admin, isLoading: false }}>
       {children}
     </SessionContext.Provider>
   );

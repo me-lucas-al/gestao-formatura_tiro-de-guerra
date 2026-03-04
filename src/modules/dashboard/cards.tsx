@@ -1,34 +1,26 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useGetAllAtiradores } from "@/hooks/atiradores/use-get-all-atiradores";
-import { useGetAllFamilyMembers } from "@/hooks/familyMembers/use-get-all-family-members";
-import { PaymentStatus } from "@prisma/client";
 
-export default function Cards() {
-  const { data: atiradores, isLoading } = useGetAllAtiradores();
-  const { data: familyMembers } = useGetAllFamilyMembers();
-
-  if (isLoading || !atiradores) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Carregando dados dos atiradores...</p>
-      </div>
-    );
+export default function Cards({ atiradores, familyMembers }: { atiradores: any[], familyMembers: any[] }) {
+  if (!atiradores) {
+    return null;
   }
 
   const pagos = atiradores.filter(
-    (a: any) => a.payment?.status === PaymentStatus.PAID
+    (a: any) => a.payment?.status === "PAID"
   ).length;
 
   const totalAtiradores = atiradores.length;
-  const totalFamilyMembers = familyMembers ? familyMembers.length : 0
+  const totalFamilyMembers = familyMembers ? familyMembers.length : 0;
   const pendentes = totalAtiradores - pagos;
   const primeiraParcelaPaga = atiradores.filter(
-    (a: any) => a.payment?.status === PaymentStatus.FIRST_INSTALLMENT_PAID
+    (a: any) => a.payment?.status === "FIRST_INSTALLMENT_PAID"
   ).length;
 
   const criancasNaoPagantes = atiradores.filter(
     (a: any) =>
-      a.familyMembers.some((fm: any) => fm.age < 6 && !fm.isPaid)
+      a.familyMembers?.some((fm: any) => fm.age < 6 && fm.payment?.status !== "PAID")
   ).length;
 
   return (

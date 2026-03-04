@@ -1,18 +1,10 @@
 "use client";
 
-import { useGetAllFamilyMembers } from "@/hooks/familyMembers/use-get-all-family-members";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { PaymentStatus } from "@prisma/client";
 
-export default function FamilyMembersList() {
-  const { data: familyMembers, isLoading } = useGetAllFamilyMembers();
-
-  if (isLoading) {
-    return <p>Carregando familiares...</p>;
-  }
-
+export default function FamilyMembersList({ familyMembers }: { familyMembers: any[] }) {
   if (!familyMembers || familyMembers.length === 0) {
     return null; 
   }
@@ -40,7 +32,7 @@ export default function FamilyMembersList() {
                   <TableCell className="text-right">
                     {member.age < 6 ? (
                       <Badge variant="secondary">Isento</Badge>
-                    ) : member.payment?.status === PaymentStatus.PAID ? (
+                    ) : member.payment?.status === "PAID" ? (
                       <Badge className="bg-green-600 text-white hover:bg-green-700">
                         Pago
                       </Badge>

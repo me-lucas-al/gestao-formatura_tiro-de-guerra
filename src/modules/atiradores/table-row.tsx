@@ -1,40 +1,41 @@
+"use client";
+
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight, Pencil, Repeat } from "lucide-react";
 import { useDashboard } from "@/contexts/dashboard-context";
-import { useGetAllAtiradores } from "@/hooks/atiradores/use-get-all-atiradores";
-import { useUpdatePayment } from "@/hooks/payments/use-update-payment";
-import { PaymentStatus } from "@prisma/client";
+import { updatePayment } from "@/actions/payments";
+import { useTransition } from "react";
 
-export default function AtiradorTableRow({ atiradorId }: { atiradorId: number }) {
+export default function AtiradorTableRow({ atirador }: { atirador: any }) {
   const { expandedRowId, toggleRow } = useDashboard();
-  const { data: atiradores } = useGetAllAtiradores();
-  const { mutate: updatePaymentStatus } = useUpdatePayment();
+  const [isPending, startTransition] = useTransition();
+  const atiradorId = atirador.id;
   
-  const atirador = atiradores?.find(a => a.id === atiradorId);
   if (!atirador) return null;
 
   const isExpanded = expandedRowId === atiradorId;
   
   // Verifica o status do pagamento do atirador
-  const atiradorIsPaid = atirador.payment?.status === PaymentStatus.PAID;
+  const atiradorIsPaid = atirador.payment?.status === "PAID";
   
   // Verifica se todos os familiares estão pagos ou isentos
-  const allFamilyPaidOrExempt = atirador.familyMembers.every((member) => {
+  const allFamilyPaidOrExempt = atirador.familyMembers?.every((member: any) => {
     if (member.age < 6) return true;
-    return member.payment?.status === PaymentStatus.PAID;
+    return member.payment?.status === "PAID";
   });
 
   // Status geral: atirador pago + todos os familiares regularizados
-  const isFullyPaid = atiradorIsPaid && (atirador.familyMembers.length === 0 || allFamilyPaidOrExempt);
+  const isFullyPaid = atiradorIsPaid && (!atirador.familyMembers || atirador.familyMembers.length === 0 || allFamilyPaidOrExempt);
 
   const handleToggleAtiradorStatus = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (atirador.payment) {
-      updatePaymentStatus({
-        paymentId: atirador.payment.id,
-        status: atiradorIsPaid ? PaymentStatus.PENDING : PaymentStatus.PAID
+      startTransition(async () => {
+        await updatePayment(atirador.payment.id, {
+          status: atiradorIsPaid ? "PENDING" : "PAID"
+        });
       });
     }
   };
@@ -66,7 +67,7 @@ export default function AtiradorTableRow({ atiradorId }: { atiradorId: number })
           </div>
         </div>
       </TableCell>
-      <TableCell>{atirador.familyMembers.length} familiar(es)</TableCell>
+      <TableCell>{atirador.familyMembers?.length || 0} familiar(es)</TableCell>
       <TableCell className="text-right">
         <div className="flex items-center justify-end gap-2">
           {atirador.payment && (
@@ -75,6 +76,7 @@ export default function AtiradorTableRow({ atiradorId }: { atiradorId: number })
                 variant="outline"
                 size="sm"
                 onClick={handleToggleAtiradorStatus}
+                disabled={isPending}
               >
               </Button>
               <Button

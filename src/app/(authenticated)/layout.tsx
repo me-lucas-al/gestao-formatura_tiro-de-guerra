@@ -1,10 +1,17 @@
-"use client";
 import { SessionProvider } from "@/hooks/use-session";
+import { getSession } from "@/actions/admin";
+import { redirect } from "next/navigation";
 
-export default function AuthenticatedLayout({
+export default async function AuthenticatedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <SessionProvider>{children}</SessionProvider>;
+  const session = await getSession();
+
+  if (!session.success || !session.data) {
+    redirect("/");
+  }
+
+  return <SessionProvider admin={session.data}>{children}</SessionProvider>;
 }

@@ -7,13 +7,10 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
 import { Fragment } from "react";
-import { useGetAllAtiradores } from "@/hooks/atiradores/use-get-all-atiradores";
 import AtiradorTableRow from "./table-row";
 import FamilyMembersDetail from "../family-member/details";
 
-export default function AtiradoresList() {
-  const { data: atiradores } = useGetAllAtiradores();
-
+export default function AtiradoresList({ atiradores }: { atiradores: any[] }) {
   if (!atiradores) return null;
 
   return (
@@ -33,8 +30,8 @@ export default function AtiradoresList() {
             <TableBody>
               {atiradores.map((atirador) => (
                 <Fragment key={atirador.id}>
-                  <AtiradorTableRow atiradorId={atirador.id} />
-                  <FamilyMembersDetail atiradorId={atirador.id} />
+                  <AtiradorTableRow atirador={atirador} />
+                  <FamilyMembersDetail atirador={atirador} />
                 </Fragment>
               ))}
             </TableBody>

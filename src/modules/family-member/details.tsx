@@ -1,27 +1,26 @@
+"use client";
+
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Pencil, PlusCircle, Repeat } from "lucide-react";
-import { PaymentStatus } from "@prisma/client";
 import { useDashboard } from "@/contexts/dashboard-context";
-import { useGetAllAtiradores } from "@/hooks/atiradores/use-get-all-atiradores";
-import { useFamilyMemberModal } from "@/contexts/family-member-modal-context"; // Garantir que a importação vem do contexto
-import { useUpdatePayment } from "@/hooks/payments/use-update-payment";
+import { useFamilyMemberModal } from "@/contexts/family-member-modal-context";
+import { updatePayment } from "@/actions/payments";
+import { useTransition } from "react";
 
-export default function FamilyMembersDetail({ atiradorId }: { atiradorId: number }) {
+export default function FamilyMembersDetail({ atirador }: { atirador: any }) {
   const { expandedRowId } = useDashboard();
-  const { data: atiradores } = useGetAllAtiradores();
   const { openCreateModal, openEditModal } = useFamilyMemberModal();
-  const { mutate: updatePayment } = useUpdatePayment();
+  const [isPending, startTransition] = useTransition();
 
-  const atirador = atiradores?.find(a => a.id === atiradorId);
+  const atiradorId = atirador.id;
   
   if (!atirador || expandedRowId !== atiradorId) return null;
 
-  const handleUpdateStatus = (paymentId: number, newStatus: PaymentStatus) => {
-    updatePayment({ 
-      id: paymentId, 
-      data: { status: newStatus } 
+  const handleUpdateStatus = (paymentId: number, newStatus: string) => {
+    startTransition(async () => {
+      await updatePayment(paymentId, { status: newStatus });
     });
   };
 
@@ -43,11 +42,11 @@ export default function FamilyMembersDetail({ atiradorId }: { atiradorId: number
               Adicionar Familiar
             </Button>
           </div>
-          {atirador.familyMembers.length > 0 ? (
+          {atirador.familyMembers?.length > 0 ? (
             <ul className="space-y-2">
-              {atirador.familyMembers.map((member: FamilyMember) => {
+              {atirador.familyMembers.map((member: any) => {
                 const isExempt = member.age < 6;
-                const isPaid = member.payment?.status === PaymentStatus.PAID;
+                const isPaid = member.payment?.status === "PAID";
 
                 return (
                   <li
@@ -69,11 +68,12 @@ export default function FamilyMembersDetail({ atiradorId }: { atiradorId: number
                         <Button
                           variant="outline"
                           size="sm"
+                          disabled={isPending}
                           onClick={(e) => {
                             e.stopPropagation();
                             handleUpdateStatus(
                               member.payment!.id,
-                              isPaid ? PaymentStatus.PENDING : PaymentStatus.PAID
+                              isPaid ? "PENDING" : "PAID"
                             );
                           }}
                         >

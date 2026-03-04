@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 
@@ -7,22 +8,22 @@ const adminData = [
   {
     id: 1,
     name: "victor",
-    password: bcrypt.hashSync("admin123", 10),
+    password: bcrypt.hashSync(process.env.ADMIN_PASSWORD!, 10),
   },
   {
     id: 2,
     name: "de_souza",
-    password: bcrypt.hashSync("admin123", 10),
+    password: bcrypt.hashSync(process.env.ADMIN_PASSWORD!, 10),
   },
   {
     id: 3,
     name: "assis",
-    password: bcrypt.hashSync("admin123", 10),
+    password: bcrypt.hashSync(process.env.ADMIN_PASSWORD!, 10),
   },
   {
     id: 4,
     name: "muniz",
-    password: bcrypt.hashSync("admin123", 10),
+    password: bcrypt.hashSync(process.env.ADMIN_PASSWORD!, 10),
   },
 ];
 

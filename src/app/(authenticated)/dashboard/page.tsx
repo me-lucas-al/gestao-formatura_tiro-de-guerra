@@ -1,31 +1,26 @@
-"use client";
-
-import { useGetAllAtiradores } from "@/hooks/atiradores/use-get-all-atiradores";
 import DashboardHeader from "@/modules/dashboard/header";
 import AtiradoresList from "@/modules/atiradores/list";
 import { DashboardProvider } from "@/contexts/dashboard-context";
 import FamilyMemberModalWrapper from "@/modules/family-member/wrapper";
 import { FamilyMemberModalProvider } from "@/contexts/family-member-modal-context";
 import FamilyMembersList from "@/modules/family-member/list";
+import { getAtiradores } from "@/actions/atiradores";
+import { getFamilyMembers } from "@/actions/family-members";
 
-export default function Dashboard() {
-  const { data: atiradores, isLoading } = useGetAllAtiradores();
+export default async function Dashboard() {
+  const atiradoresRes = await getAtiradores();
+  const familyMembersRes = await getFamilyMembers();
 
-  if (isLoading || !atiradores) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Carregando dados dos atiradores...</p>
-      </div>
-    );
-  }
+  const atiradores = atiradoresRes.success ? atiradoresRes.data : [];
+  const familyMembers = familyMembersRes.success ? familyMembersRes.data : [];
 
   return (
     <DashboardProvider>
       <FamilyMemberModalProvider>
         <div className="container mx-auto p-4 md:p-8">
-          <DashboardHeader />
-          <AtiradoresList />
-          <FamilyMembersList />
+          <DashboardHeader atiradores={atiradores} familyMembers={familyMembers} />
+          <AtiradoresList atiradores={atiradores} />
+          <FamilyMembersList familyMembers={familyMembers} />
           <FamilyMemberModalWrapper />
         </div>
       </FamilyMemberModalProvider>

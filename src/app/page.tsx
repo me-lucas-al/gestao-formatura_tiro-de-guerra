@@ -1,24 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import HeaderLogin from "@/modules/login/header-login";
 import InputAdminName from "@/modules/login/input-admin-name";
 import InputPassword from "@/modules/login/input-password";
 import ButtonSubmit from "@/modules/login/button-submit";
-import { useLogin } from "@/hooks/use-login";
-import { AxiosError } from "axios";
+import { loginAdmin } from "@/actions/admin";
 
 export default function Login() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const { mutate: data, isPending, error } = useLogin();
-
-  const apiError = error as AxiosError<{ error: string }>;
-  const errorMessage = apiError?.response?.data?.error;
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const handleSubmit = () => {
     if (!name || !password) return;
-    data({ adminName: name, password });
+    setErrorMessage(null);
+    
+    startTransition(async () => {
+      const res = await loginAdmin({ adminName: name, password });
+      if (res.error) {
+        setErrorMessage(res.error);
+      } else if (res.success) {
+        router.push("/dashboard");
+      }
+    });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {

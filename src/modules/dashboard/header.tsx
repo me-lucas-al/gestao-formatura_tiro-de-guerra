@@ -1,7 +1,9 @@
+"use client";
+
 import { useSession } from "@/hooks/use-session";
 import Cards from "./cards";
 
-export default function DashboardHeader() {
+export default function DashboardHeader({ atiradores, familyMembers }: { atiradores: any[], familyMembers: any[] }) {
   const { admin } = useSession();
 
   return (
@@ -14,7 +16,7 @@ export default function DashboardHeader() {
             .join(" ")
             .split(" ")
             .map(
-              (word) =>
+              (word: string) =>
                 word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
             )
             .join(" ")}
@@ -22,7 +24,7 @@ export default function DashboardHeader() {
         </h1>
       </div>
 
-      <Cards />
+      <Cards atiradores={atiradores} familyMembers={familyMembers} />
     </>
   );
 }
