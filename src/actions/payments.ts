@@ -1,8 +1,11 @@
 "use server";
 
-import prisma from "@/lib/prisma";
+import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { createPaymentSchema, updatePaymentSchema } from "@/schemas/payment/create-payment-schema";
+import {
+  createPaymentSchema,
+  updatePaymentSchema,
+} from "@/schemas/payment/create-payment-schema";
 
 export async function createPayment(data: any) {
   try {
@@ -15,31 +18,40 @@ export async function createPayment(data: any) {
     const { atiradorId, familyMemberId } = parsedData.data;
 
     if (!atiradorId && !familyMemberId) {
-      return { error: "O pagamento deve ser associado a um atirador ou a um familiar." };
+      return {
+        error: "O pagamento deve ser associado a um atirador ou a um familiar.",
+      };
     }
 
     if (atiradorId && familyMemberId) {
-      return { error: "O pagamento não pode ser associado a um atirador e um familiar ao mesmo tempo." };
+      return {
+        error:
+          "O pagamento não pode ser associado a um atirador e um familiar ao mesmo tempo.",
+      };
     }
 
     if (atiradorId) {
-      const atiradorExists = await prisma.atirador.findUnique({ where: { id: atiradorId } });
+      const atiradorExists = await db.atirador.findUnique({
+        where: { id: atiradorId },
+      });
       if (!atiradorExists) {
         return { error: `Atirador com ID ${atiradorId} não encontrado.` };
       }
     }
 
     if (familyMemberId) {
-      const familyMemberExists = await prisma.familyMember.findUnique({ where: { id: familyMemberId } });
+      const familyMemberExists = await db.familyMember.findUnique({
+        where: { id: familyMemberId },
+      });
       if (!familyMemberExists) {
         return { error: `Familiar com ID ${familyMemberId} não encontrado.` };
       }
     }
 
-    const newPayment = await prisma.payment.create({
+    const newPayment = await db.payment.create({
       data: {
         ...(parsedData.data as any),
-        id: undefined, 
+        id: undefined,
       },
     });
 
@@ -59,7 +71,7 @@ export async function updatePayment(id: number, data: any) {
       return { error: "ID de pagamento inválido." };
     }
 
-    const existingPayment = await prisma.payment.findUnique({
+    const existingPayment = await db.payment.findUnique({
       where: { id },
     });
 
@@ -77,13 +89,16 @@ export async function updatePayment(id: number, data: any) {
 
     if (atiradorId !== undefined && familyMemberId !== undefined) {
       if (atiradorId && familyMemberId) {
-        return { error: "O pagamento não pode ser associado a um atirador e um familiar ao mesmo tempo." };
+        return {
+          error:
+            "O pagamento não pode ser associado a um atirador e um familiar ao mesmo tempo.",
+        };
       }
     }
 
     if (atiradorId !== undefined && atiradorId !== null) {
-      const atiradorExists = await prisma.atirador.findUnique({ 
-        where: { id: atiradorId } 
+      const atiradorExists = await db.atirador.findUnique({
+        where: { id: atiradorId },
       });
       if (!atiradorExists) {
         return { error: `Atirador com ID ${atiradorId} não encontrado.` };
@@ -91,15 +106,15 @@ export async function updatePayment(id: number, data: any) {
     }
 
     if (familyMemberId !== undefined && familyMemberId !== null) {
-      const familyMemberExists = await prisma.familyMember.findUnique({ 
-        where: { id: familyMemberId } 
+      const familyMemberExists = await db.familyMember.findUnique({
+        where: { id: familyMemberId },
       });
       if (!familyMemberExists) {
         return { error: `Familiar com ID ${familyMemberId} não encontrado.` };
       }
     }
 
-    const updatedPayment = await prisma.payment.update({
+    const updatedPayment = await db.payment.update({
       where: { id },
       data: parsedData.data as any,
     });

@@ -1,5 +1,7 @@
-import 'dotenv/config'
-import { db } from "@/lib/prisma";
+import * as dotenv from "dotenv";
+
+// 1. Injeta as variáveis de ambiente ANTES da conexão do banco
+dotenv.config({ path: "./prisma/.env" });
 import bcrypt from "bcrypt";
 
 const adminData = [
@@ -127,34 +129,39 @@ const atiradorData = [
   { id: 100, number: 100, name: "Yuri", adminId: 1 },
 ];
 
-async function main() {
-  console.log("Iniciando seed de Administradores...");
-  for (const admin of adminData) {
-    const user = await db.admin.upsert({
-      where: { id: admin.id },
-      update: {},
-      create: admin,
-    });
-    console.log(`-> Administrador ${user.name} criado/verificado.`);
-  }
+const main = async () => {
+  // 2. Importação dinâmica após a configuração do dotenv
+  // Ajuste o caminho "@/lib/prisma" se for diferente no seu projeto
+  const { db } = await import("@/lib/prisma");
 
-  console.log("\nIniciando seed dos atiradores...");
-  for (const atirador of atiradorData) {
-    const user = await db.atirador.upsert({
-      where: { id: atirador.id },
-      update: {},
-      create: atirador,
+  console.log("Iniciando seed de Administradores e Atiradores...");
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await db.$transaction(async (tx: any) => {
+    // Apaga os dados antigos para não duplicar (Ordem importa: filhos primeiro)
+    await tx.atirador.deleteMany();
+    await tx.admin.deleteMany();
+
+    console.log("-> Criando Administradores...");
+    await tx.admin.createMany({
+      data: adminData,
     });
-    console.log(`-> Atirador ${user.name} (ID: ${user.id}) criado/verificado.`);
-  }
-}
+
+    console.log("-> Criando Atiradores...");
+    await tx.atirador.createMany({
+      data: atiradorData,
+    });
+  });
+
+  console.log("✅ Seed finalizado com sucesso!");
+};
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error("❌ Erro ao rodar o seed:", e);
     process.exit(1);
   })
   .finally(async () => {
-    console.log("\nSeed finalizado.");
+    const { db } = await import("@/lib/prisma");
     await db.$disconnect();
   });

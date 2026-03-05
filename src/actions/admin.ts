@@ -1,14 +1,14 @@
 "use server";
 
 import bcrypt from "bcrypt";
-import prisma from "@/lib/prisma";
+import { db } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 
 export async function loginAdmin({ adminName, password }: any) {
   try {
-    const admin = await prisma.admin.findFirst({ where: { name: adminName } });
+    const admin = await db.admin.findFirst({ where: { name: adminName } });
 
     if (!admin) {
       return { error: "Usuário não encontrado" };
@@ -19,9 +19,13 @@ export async function loginAdmin({ adminName, password }: any) {
       return { error: "Senha incorreta" };
     }
 
-    const token = jwt.sign({ id: admin.id, name: admin.name }, process.env.JWT_SECRET!, {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign(
+      { id: admin.id, name: admin.name },
+      process.env.JWT_SECRET!,
+      {
+        expiresIn: "1d",
+      },
+    );
 
     const cookieStore = await cookies();
     cookieStore.set("token", token, {
@@ -44,7 +48,10 @@ export async function getSession() {
     const token = cookieStore.get("token")?.value;
 
     if (!token) {
-      return { error: "Token não encontrado. Acesso não autorizado.", status: 401 };
+      return {
+        error: "Token não encontrado. Acesso não autorizado.",
+        status: 401,
+      };
     }
 
     const secret = new TextEncoder().encode(process.env.JWT_SECRET as string);
@@ -52,10 +59,13 @@ export async function getSession() {
     const adminId = payload.id ? Number(payload.id) : undefined;
 
     if (!adminId) {
-      return { error: "Token inválido. ID do administrador não encontrado.", status: 401 };
+      return {
+        error: "Token inválido. ID do administrador não encontrado.",
+        status: 401,
+      };
     }
 
-    const admin = await prisma.admin.findUnique({
+    const admin = await db.admin.findUnique({
       where: {
         id: adminId,
       },
@@ -75,7 +85,7 @@ export async function getSession() {
 
 export async function getAllAdmins() {
   try {
-    const admins = await prisma.admin.findMany({
+    const admins = await db.admin.findMany({
       include: {
         atiradores: {
           include: {

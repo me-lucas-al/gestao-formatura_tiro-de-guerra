@@ -1,11 +1,11 @@
 "use server";
 
-import prisma from "@/lib/prisma";
+import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export async function getAtiradores() {
   try {
-    const atiradores = await prisma.atirador.findMany({
+    const atiradores = await db.atirador.findMany({
       orderBy: {
         number: "asc",
       },
@@ -28,15 +28,15 @@ export async function getAtiradores() {
 
 export async function updateAtirador(id: number, data: any) {
   try {
-    const atirador = await prisma.atirador.update({
+    const atirador = await db.atirador.update({
       where: { id },
       data,
     });
-    
+
     // Revalidar os caminhos onde os atiradores são exibidos
     revalidatePath("/dashboard");
     revalidatePath("/atiradores");
-    
+
     return { success: true, data: atirador };
   } catch (error) {
     console.error("Erro ao atualizar atirador:", error);

@@ -1,12 +1,15 @@
 "use server";
 
-import prisma from "@/lib/prisma";
+import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { createFamilyMemberSchema, updateFamilyMemberSchema } from "@/schemas/family-members/family-member-schema";
+import {
+  createFamilyMemberSchema,
+  updateFamilyMemberSchema,
+} from "@/schemas/family-members/family-member-schema";
 
 export async function getFamilyMembers() {
   try {
-    const familyMembers = await prisma.familyMember.findMany({
+    const familyMembers = await db.familyMember.findMany({
       orderBy: {
         name: "asc",
       },
@@ -32,7 +35,7 @@ export async function createFamilyMember(data: any) {
 
     const { name, age, atiradorId, payment } = parsed.data;
 
-    const atirador = await prisma.atirador.findUnique({
+    const atirador = await db.atirador.findUnique({
       where: { id: atiradorId },
     });
 
@@ -40,20 +43,22 @@ export async function createFamilyMember(data: any) {
       return { error: `Atirador com ID ${atiradorId} não encontrado.` };
     }
 
-    const newFamilyMember = await prisma.familyMember.create({
+    const newFamilyMember = await db.familyMember.create({
       data: {
         name,
         age,
         atirador: {
           connect: { id: atiradorId },
         },
-        payment: payment ? {
-          create: {
-            status: payment.status as any,
-            value: payment.value ?? 0,
-            method: payment.method as any,
-          },
-        } : undefined,
+        payment: payment
+          ? {
+              create: {
+                status: payment.status as any,
+                value: payment.value ?? 0,
+                method: payment.method as any,
+              },
+            }
+          : undefined,
       },
       include: {
         payment: true,
@@ -85,7 +90,7 @@ export async function updateFamilyMember(id: number, data: any) {
 
     const { name, age, payment } = parsed.data;
 
-    const familyMemberExists = await prisma.familyMember.findUnique({
+    const familyMemberExists = await db.familyMember.findUnique({
       where: { id },
     });
 
@@ -93,7 +98,7 @@ export async function updateFamilyMember(id: number, data: any) {
       return { error: `Familiar com ID ${id} não encontrado.` };
     }
 
-    const updatedFamilyMember = await prisma.familyMember.update({
+    const updatedFamilyMember = await db.familyMember.update({
       where: { id },
       data: {
         name,
