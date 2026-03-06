@@ -2,8 +2,9 @@
 
 import { useSession } from "@/hooks/use-session";
 import Cards from "./cards";
+import { AtiradorWithRelations, FamilyMemberWithRelations } from "@packages/types";
 
-export default function DashboardHeader({ atiradores, familyMembers }: { atiradores: any[], familyMembers: any[] }) {
+export default function DashboardHeader({ atiradores, familyMembers }: { atiradores: AtiradorWithRelations[], familyMembers: FamilyMemberWithRelations[] }) {
   const { admin } = useSession();
 
   return (

@@ -1,4 +1,4 @@
-export const API_URL = "http://localhost:3000"; 
+export const API_URL = "http://localhost:3000";
 
 function getToken() {
   return typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -8,14 +8,12 @@ export async function apiGet(endpoint: string) {
   const token = getToken();
   const url = `${API_URL}${endpoint}`;
 
-
   const res = await fetch(url, {
     headers: {
       "Content-Type": "application/json",
       Authorization: token ? `Bearer ${token}` : "",
     },
   });
-
 
   if (res.status === 401) {
     console.warn("⚠️ Token inválido ou expirado. Redirecionando...");
@@ -27,7 +25,7 @@ export async function apiGet(endpoint: string) {
   return res.json();
 }
 
-export async function apiPost(endpoint: string, body: any, withAuth = true) {
+export async function apiPost<T>(endpoint: string, body: T, withAuth = true) {
   const token = withAuth ? getToken() : null;
   const url = `${API_URL}${endpoint}`;
 

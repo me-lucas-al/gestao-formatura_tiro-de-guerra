@@ -1,14 +1,15 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
+import { AtiradorWithRelations } from "@packages/types";
 
 interface FamilyMemberModalContextType {
   isModalOpen: boolean;
   modalMode: "create" | "edit";
   selectedAtiradorId: number | null;
-  selectedFamilyMember: any;
+  selectedFamilyMember: AtiradorWithRelations["familyMembers"][number] | null;
   openCreateModal: (atiradorId: number) => void;
-  openEditModal: (atiradorId: number, familyMember: any) => void;
+  openEditModal: (atiradorId: number, familyMember: AtiradorWithRelations["familyMembers"][number]) => void;
   closeModal: () => void;
 }
 
@@ -18,7 +19,7 @@ export function FamilyMemberModalProvider({ children }: { children: React.ReactN
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedAtiradorId, setSelectedAtiradorId] = useState<number | null>(null);
-  const [selectedFamilyMember, setSelectedFamilyMember] = useState<any>(null);
+  const [selectedFamilyMember, setSelectedFamilyMember] = useState<AtiradorWithRelations["familyMembers"][number] | null>(null);
 
   const openCreateModal = (atiradorId: number) => {
     setSelectedAtiradorId(atiradorId);
@@ -26,7 +27,7 @@ export function FamilyMemberModalProvider({ children }: { children: React.ReactN
     setIsModalOpen(true);
   };
 
-  const openEditModal = (atiradorId: number, familyMember: any) => {
+  const openEditModal = (atiradorId: number, familyMember: AtiradorWithRelations["familyMembers"][number]) => {
     setSelectedAtiradorId(atiradorId);
     setSelectedFamilyMember(familyMember);
     setModalMode("edit");

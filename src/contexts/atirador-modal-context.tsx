@@ -1,13 +1,14 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
+import { AtiradorWithRelations } from "@packages/types";
 
 interface AtiradorModalContextType {
     isModalOpen: boolean;
     modalMode: "create" | "edit";
-    selectedAtirador: any;
+    selectedAtirador: AtiradorWithRelations | null;
     openCreateModal: () => void;
-    openEditModal: (atirador: any) => void;
+    openEditModal: (atirador: AtiradorWithRelations) => void;
     closeModal: () => void;
 }
 
@@ -16,14 +17,14 @@ const AtiradorModalContext = createContext<AtiradorModalContextType | null>(null
 export function AtiradorModalProvider({ children }: { children: React.ReactNode }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<"create" | "edit">("create");
-    const [selectedAtirador, setSelectedAtirador] = useState<any>(null);
+    const [selectedAtirador, setSelectedAtirador] = useState<AtiradorWithRelations | null>(null);
 
     const openCreateModal = () => {
         setModalMode("create");
         setIsModalOpen(true);
     };
 
-    const openEditModal = (atirador: any) => {
+    const openEditModal = (atirador: AtiradorWithRelations) => {
         setSelectedAtirador(atirador);
         setModalMode("edit");
         setIsModalOpen(true);

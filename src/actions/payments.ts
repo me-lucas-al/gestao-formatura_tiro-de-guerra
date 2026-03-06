@@ -6,8 +6,12 @@ import {
   createPaymentSchema,
   updatePaymentSchema,
 } from "@/schemas/payment/create-payment-schema";
+import { z } from "zod";
 
-export async function createPayment(data: any) {
+type CreatePaymentType = z.infer<typeof createPaymentSchema>;
+type UpdatePaymentType = z.infer<typeof updatePaymentSchema>;
+
+export async function createPayment(data: CreatePaymentType) {
   try {
     const parsedData = createPaymentSchema.safeParse(data);
 
@@ -65,7 +69,7 @@ export async function createPayment(data: any) {
   }
 }
 
-export async function updatePayment(id: number, data: any) {
+export async function updatePayment(id: number, data: UpdatePaymentType) {
   try {
     if (isNaN(id)) {
       return { error: "ID de pagamento inválido." };

@@ -11,10 +11,13 @@ import { useDashboard } from "@/contexts/dashboard-context";
 import { useFamilyMemberModal } from "@/contexts/family-member-modal-context";
 import { deleteFamilyMember, updateFamilyMember } from "@/actions/family-members";
 import { useState, useTransition } from "react";
+import { useConfirm } from "@/hooks/use-confirm";
+import { AtiradorWithRelations } from "@packages/types";
 
-export default function FamilyMembersDetail({ atirador }: { atirador: any }) {
+export default function FamilyMembersDetail({ atirador }: { atirador: AtiradorWithRelations }) {
   const { expandedRowId } = useDashboard();
   const { openCreateModal, openEditModal } = useFamilyMemberModal();
+  const { confirm } = useConfirm();
   const [isPending, startTransition] = useTransition();
 
   const [editingMemberId, setEditingMemberId] = useState<number | null>(null);
@@ -31,7 +34,7 @@ export default function FamilyMembersDetail({ atirador }: { atirador: any }) {
 
   const submitPaymentUpdate = () => {
     if (!editingMemberId) return;
-    const member = atirador.familyMembers?.find((m: any) => m.id === editingMemberId);
+    const member = atirador.familyMembers?.find((m) => m.id === editingMemberId);
 
     startTransition(async () => {
       await updateFamilyMember(editingMemberId, {
@@ -47,7 +50,7 @@ export default function FamilyMembersDetail({ atirador }: { atirador: any }) {
     });
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status?: string) => {
     switch (status) {
       case "PAID":
         return <Badge className="bg-green-500 text-white">Pago</Badge>;
@@ -82,7 +85,7 @@ export default function FamilyMembersDetail({ atirador }: { atirador: any }) {
           </div>
           {atirador.familyMembers?.length > 0 ? (
             <ul className="space-y-2">
-              {atirador.familyMembers.map((member: any) => {
+              {atirador.familyMembers.map((member) => {
                 const isExempt = member.age < 6;
 
                 return (
@@ -131,9 +134,16 @@ export default function FamilyMembersDetail({ atirador }: { atirador: any }) {
                         className="text-destructive hover:text-destructive hover:bg-destructive/10"
                         title="Excluir Familiar"
                         disabled={isPending}
-                        onClick={(e) => {
+                        onClick={async (e) => {
                           e.stopPropagation();
-                          if (confirm(`Tem certeza que deseja excluir o familiar ${member.name}?`)) {
+                          const confirmed = await confirm({
+                            title: "Excluir familiar",
+                            description: `Tem certeza que deseja excluir o familiar ${member.name}?`,
+                            confirmText: "Excluir",
+                            cancelText: "Cancelar"
+                          });
+
+                          if (confirmed) {
                             startTransition(async () => {
                               await deleteFamilyMember(member.id);
                             });

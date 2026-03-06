@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect, useTransition } from "react";
-import { updateAtirador } from "@/actions/atiradores";
+import { updateAtirador, createAtirador } from "@/actions/atiradores";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
@@ -58,9 +58,16 @@ export default function AtiradorModal() {
                     console.error(res.error);
                 }
             } else {
-                // Placeholder for Create
-                alert("Criar Atirador action not implemented in modal yet.");
-                closeModal();
+                const res = await createAtirador({
+                    name,
+                    number: parseInt(number),
+                    payment: paymentData,
+                });
+                if (res.success) {
+                    closeModal();
+                } else {
+                    console.error(res.error);
+                }
             }
         });
     };

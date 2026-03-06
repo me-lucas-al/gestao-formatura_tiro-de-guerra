@@ -6,6 +6,8 @@ import {
   UpdateAtiradorData,
   updateAtiradorSchema,
   deleteAtiradorSchema,
+  CreateAtiradorData,
+  createAtiradorSchema,
 } from "@packages/schemas/atirador.schema";
 
 export async function getAtiradores() {
@@ -28,6 +30,53 @@ export async function getAtiradores() {
   } catch (error) {
     console.error("Erro ao buscar atiradores:", error);
     return { error: "Erro interno ao buscar atiradores." };
+  }
+}
+
+export async function createAtirador(data: CreateAtiradorData) {
+  try {
+    const parsedData = createAtiradorSchema.safeParse(data);
+
+    if (!parsedData.success) {
+      return { error: "Dados inválidos.", issues: parsedData.error.format() };
+    }
+
+    const { name, number, payment } = parsedData.data;
+
+    const atiradorExists = await db.atirador.findFirst({
+      where: { number },
+    });
+
+    if (atiradorExists) {
+      return { error: `Já existe um atirador com o número ${number}.` };
+    }
+
+    const newAtirador = await db.atirador.create({
+      data: {
+        name,
+        number,
+        payment: payment
+          ? {
+              create: {
+                status: payment.status,
+                value: payment.value || 0,
+                method: payment.method || "CASH",
+              },
+            }
+          : undefined,
+      },
+      include: {
+        payment: true,
+      },
+    });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/atiradores");
+
+    return { success: true, data: newAtirador };
+  } catch (error) {
+    console.error("Erro ao criar atirador:", error);
+    return { error: "Erro interno ao processar a requisição." };
   }
 }
 

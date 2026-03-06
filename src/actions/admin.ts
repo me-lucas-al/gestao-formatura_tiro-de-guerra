@@ -6,7 +6,13 @@ import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 
-export async function loginAdmin({ adminName, password }: any) {
+export async function loginAdmin({
+  adminName,
+  password,
+}: {
+  adminName: string;
+  password: string;
+}) {
   try {
     const admin = await db.admin.findFirst({ where: { name: adminName } });
 

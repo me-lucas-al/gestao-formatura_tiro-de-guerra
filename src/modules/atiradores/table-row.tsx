@@ -11,10 +11,13 @@ import { useDashboard } from "@/contexts/dashboard-context";
 import { deleteAtirador, updateAtirador } from "@/actions/atiradores";
 import { useAtiradorModal } from "@/contexts/atirador-modal-context";
 import { useState, useTransition } from "react";
+import { useConfirm } from "@/hooks/use-confirm";
+import { AtiradorWithRelations } from "@packages/types";
 
-export default function AtiradorTableRow({ atirador }: { atirador: any }) {
+export default function AtiradorTableRow({ atirador }: { atirador: AtiradorWithRelations }) {
   const { expandedRowId, toggleRow } = useDashboard();
   const { openEditModal } = useAtiradorModal();
+  const { confirm } = useConfirm();
   const [isPending, startTransition] = useTransition();
 
   const [editingAtiradorId, setEditingAtiradorId] = useState<number | null>(null);
@@ -53,7 +56,7 @@ export default function AtiradorTableRow({ atirador }: { atirador: any }) {
     });
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status?: string) => {
     switch (status) {
       case "PAID":
         return <Badge className="bg-green-500 text-white text-xs">Pago</Badge>;
@@ -124,9 +127,17 @@ export default function AtiradorTableRow({ atirador }: { atirador: any }) {
             className="text-destructive hover:text-destructive hover:bg-destructive/10"
             title="Excluir Atirador"
             disabled={isPending}
-            onClick={(e) => {
+            onClick={async (e) => {
               e.stopPropagation();
-              if (confirm(`Atenção: A exclusão do atirador também excluirá todos os familiares e pagamentos vinculados a ele.\n\nTem certeza que deseja excluir o atirador ${atirador.name}?`)) {
+
+              const confirmed = await confirm({
+                title: "Excluir Atirador",
+                description: `Atenção: A exclusão do atirador também excluirá todos os familiares e pagamentos vinculados a ele.\n\nTem certeza que deseja excluir o atirador ${atirador.name}?`,
+                confirmText: "Excluir",
+                cancelText: "Cancelar"
+              });
+
+              if (confirmed) {
                 startTransition(async () => {
                   await deleteAtirador(atirador.id);
                 });

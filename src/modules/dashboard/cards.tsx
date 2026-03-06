@@ -1,26 +1,27 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AtiradorWithRelations, FamilyMemberWithRelations } from "@packages/types";
 
-export default function Cards({ atiradores, familyMembers }: { atiradores: any[], familyMembers: any[] }) {
+export default function Cards({ atiradores, familyMembers }: { atiradores: AtiradorWithRelations[], familyMembers: FamilyMemberWithRelations[] }) {
   if (!atiradores) {
     return null;
   }
 
   const pagos = atiradores.filter(
-    (a: any) => a.payment?.status === "PAID"
+    (a) => a.payment?.status === "PAID"
   ).length;
 
   const totalAtiradores = atiradores.length;
   const totalFamilyMembers = familyMembers ? familyMembers.length : 0;
   const pendentes = totalAtiradores - pagos;
   const primeiraParcelaPaga = atiradores.filter(
-    (a: any) => a.payment?.status === "FIRST_INSTALLMENT_PAID"
+    (a) => a.payment?.status === "FIRST_INSTALLMENT_PAID"
   ).length;
 
   const criancasNaoPagantes = atiradores.filter(
-    (a: any) =>
-      a.familyMembers?.some((fm: any) => fm.age < 6 && fm.payment?.status !== "PAID")
+    (a) =>
+      a.familyMembers?.some((fm) => fm.age < 6 && fm.payment?.status !== "PAID")
   ).length;
 
   return (

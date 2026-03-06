@@ -3,10 +3,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { FamilyMemberWithRelations } from "@packages/types";
 
-export default function FamilyMembersList({ familyMembers }: { familyMembers: any[] }) {
+export default function FamilyMembersList({ familyMembers }: { familyMembers: FamilyMemberWithRelations[] }) {
   if (!familyMembers || familyMembers.length === 0) {
-    return null; 
+    return null;
   }
 
   return (
@@ -24,7 +25,7 @@ export default function FamilyMembersList({ familyMembers }: { familyMembers: an
               </TableRow>
             </TableHeader>
             <TableBody>
-              {familyMembers.map((member: any) => (
+              {familyMembers.map((member) => (
                 <TableRow key={member.id}>
                   <TableCell className="font-medium">{member.name}</TableCell>
                   <TableCell>{member.age || "N/A"}</TableCell>
