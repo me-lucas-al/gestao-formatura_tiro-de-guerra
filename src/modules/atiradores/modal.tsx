@@ -18,15 +18,21 @@ export default function AtiradorModal() {
 
     const [name, setName] = useState("");
     const [number, setNumber] = useState("");
+    const [paymentStatus, setPaymentStatus] = useState("PENDING");
+    const [paymentMethod, setPaymentMethod] = useState("CASH");
     const [isPending, startTransition] = useTransition();
 
     useEffect(() => {
         if (modalMode === "edit" && selectedAtirador) {
             setName(selectedAtirador.name || "");
             setNumber(selectedAtirador.number?.toString() || "");
+            setPaymentStatus(selectedAtirador.payment?.status || "PENDING");
+            setPaymentMethod(selectedAtirador.payment?.method || "CASH");
         } else {
             setName("");
             setNumber("");
+            setPaymentStatus("PENDING");
+            setPaymentMethod("CASH");
         }
     }, [modalMode, selectedAtirador]);
 
@@ -34,10 +40,17 @@ export default function AtiradorModal() {
         e.preventDefault();
 
         startTransition(async () => {
+            const paymentData = {
+                status: paymentStatus,
+                value: 0,
+                method: paymentStatus === "PAID" || paymentStatus === "FIRST_INSTALLMENT_PAID" ? paymentMethod : "CASH",
+            };
+
             if (modalMode === "edit" && selectedAtirador) {
                 const res = await updateAtirador(selectedAtirador.id, {
                     name,
                     number: parseInt(number),
+                    payment: paymentData,
                 });
                 if (res.success) {
                     closeModal();
@@ -51,6 +64,8 @@ export default function AtiradorModal() {
             }
         });
     };
+
+    const showPaymentMethod = paymentStatus === "PAID" || paymentStatus === "FIRST_INSTALLMENT_PAID";
 
     return (
         <Dialog open={isModalOpen} onOpenChange={closeModal}>
@@ -83,6 +98,38 @@ export default function AtiradorModal() {
                             required
                         />
                     </div>
+
+                    <div>
+                        <Label>Status do Pagamento</Label>
+                        <Select value={paymentStatus} onValueChange={setPaymentStatus}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Selecione o status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="PENDING">Pendente</SelectItem>
+                                <SelectItem value="PAID">Pago</SelectItem>
+                                <SelectItem value="FIRST_INSTALLMENT_PAID">Primeira Parcela Paga</SelectItem>
+                                <SelectItem value="CANCELED">Cancelado</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {showPaymentMethod && (
+                        <div>
+                            <Label>Método de Pagamento</Label>
+                            <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Selecione o método" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="CASH">Dinheiro</SelectItem>
+                                    <SelectItem value="CREDIT_CARD">Cartão de Crédito</SelectItem>
+                                    <SelectItem value="DEBIT_CARD">Cartão de Débito</SelectItem>
+                                    <SelectItem value="PIX">PIX</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
 
                     <div className="flex justify-end gap-2 pt-2">
                         <Button type="button" variant="outline" onClick={closeModal}>

@@ -28,9 +28,36 @@ export async function getAtiradores() {
 
 export async function updateAtirador(id: number, data: any) {
   try {
+    const { name, number, payment } = data;
+
+    const updateData: any = {
+      name,
+      number,
+    };
+
+    if (payment) {
+      updateData.payment = {
+        upsert: {
+          create: {
+            status: payment.status,
+            value: payment.value || 0,
+            method: payment.method || "CASH",
+          },
+          update: {
+            status: payment.status,
+            value: payment.value,
+            method: payment.method,
+          },
+        },
+      };
+    }
+
     const atirador = await db.atirador.update({
       where: { id },
-      data,
+      data: updateData,
+      include: {
+        payment: true,
+      },
     });
 
     // Revalidar os caminhos onde os atiradores são exibidos

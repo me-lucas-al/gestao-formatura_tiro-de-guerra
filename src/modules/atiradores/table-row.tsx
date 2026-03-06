@@ -8,8 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { ChevronDown, ChevronRight, Pencil, Repeat, Trash2 } from "lucide-react";
 import { useDashboard } from "@/contexts/dashboard-context";
-import { updatePayment } from "@/actions/payments";
-import { deleteAtirador } from "@/actions/atiradores";
+import { deleteAtirador, updateAtirador } from "@/actions/atiradores";
 import { useAtiradorModal } from "@/contexts/atirador-modal-context";
 import { useState, useTransition } from "react";
 
@@ -18,7 +17,7 @@ export default function AtiradorTableRow({ atirador }: { atirador: any }) {
   const { openEditModal } = useAtiradorModal();
   const [isPending, startTransition] = useTransition();
 
-  const [editingPaymentId, setEditingPaymentId] = useState<number | null>(null);
+  const [editingAtiradorId, setEditingAtiradorId] = useState<number | null>(null);
   const [editStatus, setEditStatus] = useState("PENDING");
   const [editMethod, setEditMethod] = useState("CASH");
 
@@ -37,16 +36,17 @@ export default function AtiradorTableRow({ atirador }: { atirador: any }) {
   const isFullyPaid = atiradorIsPaid && (!atirador.familyMembers || atirador.familyMembers.length === 0 || allFamilyPaidOrExempt);
 
   const closePaymentEdit = () => {
-    setEditingPaymentId(null);
+    setEditingAtiradorId(null);
   };
 
   const submitPaymentUpdate = () => {
-    if (!editingPaymentId) return;
+    if (!editingAtiradorId) return;
     startTransition(async () => {
-      await updatePayment(editingPaymentId, {
-        id: editingPaymentId,
-        status: editStatus,
-        method: (editStatus === "PAID" || editStatus === "FIRST_INSTALLMENT_PAID") ? editMethod : "CASH",
+      await updateAtirador(editingAtiradorId, {
+        payment: {
+          status: editStatus,
+          method: (editStatus === "PAID" || editStatus === "FIRST_INSTALLMENT_PAID") ? editMethod : "CASH",
+        }
       });
       closePaymentEdit();
     });
@@ -91,22 +91,20 @@ export default function AtiradorTableRow({ atirador }: { atirador: any }) {
       <TableCell>{atirador.familyMembers?.length || 0} familiar(es)</TableCell>
       <TableCell className="text-right">
         <div className="flex items-center justify-end gap-2">
-          {atirador.payment && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                setEditingPaymentId(atirador.payment.id);
-                setEditStatus(atirador.payment.status || "PENDING");
-                setEditMethod(atirador.payment.method || "CASH");
-              }}
-              disabled={isPending}
-            >
-              <Repeat className="h-4 w-4 mr-2" />
-              Mudar Status
-            </Button>
-          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditingAtiradorId(atirador.id);
+              setEditStatus(atirador.payment?.status || "PENDING");
+              setEditMethod(atirador.payment?.method || "CASH");
+            }}
+            disabled={isPending}
+          >
+            <Repeat className="h-4 w-4 mr-2" />
+            Mudar Status
+          </Button>
 
           <Button
             variant="ghost"
@@ -144,7 +142,7 @@ export default function AtiradorTableRow({ atirador }: { atirador: any }) {
           )}
         </div>
 
-        <Dialog open={editingPaymentId !== null} onOpenChange={(open) => {
+        <Dialog open={editingAtiradorId !== null} onOpenChange={(open) => {
           if (!open) closePaymentEdit();
         }}>
           <DialogContent onClick={(e) => e.stopPropagation()}>
