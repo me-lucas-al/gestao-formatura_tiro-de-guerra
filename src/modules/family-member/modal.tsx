@@ -55,7 +55,10 @@ export default function FamilyMemberModal() {
     if (!selectedAtiradorId) return;
 
     startTransition(async () => {
-      const paymentData = {
+      const parsedAge = parseInt(age);
+      const isExempt = !isNaN(parsedAge) && parsedAge < 6;
+
+      const paymentData = isExempt ? undefined : {
         status: paymentStatus,
         value: 0,
         // Only consider method if PAID or FIRST_INSTALLMENT_PAID
@@ -85,6 +88,8 @@ export default function FamilyMemberModal() {
     });
   };
 
+  const parsedAge = parseInt(age);
+  const isExempt = !isNaN(parsedAge) && parsedAge < 6;
   const showPaymentMethod = paymentStatus === "PAID" || paymentStatus === "FIRST_INSTALLMENT_PAID";
 
   return (
@@ -119,36 +124,40 @@ export default function FamilyMemberModal() {
             />
           </div>
 
-          <div>
-            <Label>Status do Pagamento</Label>
-            <Select value={paymentStatus} onValueChange={setPaymentStatus}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione o status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="PENDING">Pendente</SelectItem>
-                <SelectItem value="PAID">Pago</SelectItem>
-                <SelectItem value="FIRST_INSTALLMENT_PAID">Primeira Parcela Paga</SelectItem>
-                <SelectItem value="CANCELED">Cancelado</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {!isExempt && (
+            <>
+              <div>
+                <Label>Status do Pagamento</Label>
+                <Select value={paymentStatus} onValueChange={setPaymentStatus}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PENDING">Pendente</SelectItem>
+                    <SelectItem value="PAID">Pago</SelectItem>
+                    <SelectItem value="FIRST_INSTALLMENT_PAID">Primeira Parcela Paga</SelectItem>
+                    <SelectItem value="CANCELED">Cancelado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-          {showPaymentMethod && (
-            <div>
-              <Label>Método de Pagamento</Label>
-              <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o método" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="CASH">Dinheiro</SelectItem>
-                  <SelectItem value="CREDIT_CARD">Cartão de Crédito</SelectItem>
-                  <SelectItem value="DEBIT_CARD">Cartão de Débito</SelectItem>
-                  <SelectItem value="PIX">PIX</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              {showPaymentMethod && (
+                <div>
+                  <Label>Método de Pagamento</Label>
+                  <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o método" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="CASH">Dinheiro</SelectItem>
+                      <SelectItem value="CREDIT_CARD">Cartão de Crédito</SelectItem>
+                      <SelectItem value="DEBIT_CARD">Cartão de Débito</SelectItem>
+                      <SelectItem value="PIX">PIX</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </>
           )}
 
           <div className="flex justify-end gap-2 pt-2">

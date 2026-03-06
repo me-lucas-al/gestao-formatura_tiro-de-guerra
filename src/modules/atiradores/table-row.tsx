@@ -92,50 +92,51 @@ export default function AtiradorTableRow({ atirador }: { atirador: any }) {
       <TableCell className="text-right">
         <div className="flex items-center justify-end gap-2">
           {atirador.payment && (
-            <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEditingPaymentId(atirador.payment.id);
-                  setEditStatus(atirador.payment.status || "PENDING");
-                  setEditMethod(atirador.payment.method || "CASH");
-                }}
-                disabled={isPending}
-              >
-                <Repeat className="h-4 w-4 mr-2" />
-                Mudar Status
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openEditModal(atirador);
-                }}
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                title="Excluir Atirador"
-                disabled={isPending}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (confirm(`Atenção: A exclusão do atirador também excluirá todos os familiares e pagamentos vinculados a ele.\n\nTem certeza que deseja excluir o atirador ${atirador.name}?`)) {
-                    startTransition(async () => {
-                      await deleteAtirador(atirador.id);
-                    });
-                  }
-                }}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditingPaymentId(atirador.payment.id);
+                setEditStatus(atirador.payment.status || "PENDING");
+                setEditMethod(atirador.payment.method || "CASH");
+              }}
+              disabled={isPending}
+            >
+              <Repeat className="h-4 w-4 mr-2" />
+              Mudar Status
+            </Button>
           )}
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              openEditModal(atirador);
+            }}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            title="Excluir Atirador"
+            disabled={isPending}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (confirm(`Atenção: A exclusão do atirador também excluirá todos os familiares e pagamentos vinculados a ele.\n\nTem certeza que deseja excluir o atirador ${atirador.name}?`)) {
+                startTransition(async () => {
+                  await deleteAtirador(atirador.id);
+                });
+              }
+            }}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+
           {isFullyPaid ? (
             <Badge className="bg-green-500 text-white">Regularizado</Badge>
           ) : (
