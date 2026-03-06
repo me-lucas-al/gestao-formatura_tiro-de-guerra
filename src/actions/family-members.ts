@@ -105,10 +105,17 @@ export async function updateFamilyMember(id: number, data: any) {
         age,
         payment: payment
           ? {
-              update: {
-                status: payment.status as any,
-                value: payment.value,
-                method: payment.method as any,
+              upsert: {
+                create: {
+                  status: payment.status as any,
+                  value: payment.value ?? 0,
+                  method: (payment.method || "CASH") as any,
+                },
+                update: {
+                  status: payment.status as any,
+                  value: payment.value,
+                  method: payment.method as any,
+                },
               },
             }
           : undefined,

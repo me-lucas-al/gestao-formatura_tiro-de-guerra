@@ -9,8 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Pencil, PlusCircle, Repeat, Trash2 } from "lucide-react";
 import { useDashboard } from "@/contexts/dashboard-context";
 import { useFamilyMemberModal } from "@/contexts/family-member-modal-context";
-import { updatePayment } from "@/actions/payments";
-import { deleteFamilyMember } from "@/actions/family-members";
+import { deleteFamilyMember, updateFamilyMember } from "@/actions/family-members";
 import { useState, useTransition } from "react";
 
 export default function FamilyMembersDetail({ atirador }: { atirador: any }) {
@@ -18,7 +17,7 @@ export default function FamilyMembersDetail({ atirador }: { atirador: any }) {
   const { openCreateModal, openEditModal } = useFamilyMemberModal();
   const [isPending, startTransition] = useTransition();
 
-  const [editingPaymentId, setEditingPaymentId] = useState<number | null>(null);
+  const [editingMemberId, setEditingMemberId] = useState<number | null>(null);
   const [editStatus, setEditStatus] = useState("PENDING");
   const [editMethod, setEditMethod] = useState("CASH");
 
@@ -27,16 +26,21 @@ export default function FamilyMembersDetail({ atirador }: { atirador: any }) {
   if (!atirador || expandedRowId !== atiradorId) return null;
 
   const closePaymentEdit = () => {
-    setEditingPaymentId(null);
+    setEditingMemberId(null);
   };
 
   const submitPaymentUpdate = () => {
-    if (!editingPaymentId) return;
+    if (!editingMemberId) return;
+    const member = atirador.familyMembers?.find((m: any) => m.id === editingMemberId);
+
     startTransition(async () => {
-      await updatePayment(editingPaymentId, {
-        id: editingPaymentId,
-        status: editStatus,
-        method: (editStatus === "PAID" || editStatus === "FIRST_INSTALLMENT_PAID") ? editMethod : "CASH",
+      await updateFamilyMember(editingMemberId, {
+        name: member?.name, // necessary to pass schema validation perhaps, wait no, schema might require it
+        age: member?.age,
+        payment: {
+          status: editStatus,
+          method: (editStatus === "PAID" || editStatus === "FIRST_INSTALLMENT_PAID") ? editMethod : "CASH",
+        }
       });
       closePaymentEdit();
     });
@@ -94,16 +98,16 @@ export default function FamilyMembersDetail({ atirador }: { atirador: any }) {
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      {!isExempt && member.payment && (
+                      {!isExempt && (
                         <Button
                           variant="outline"
                           size="sm"
                           disabled={isPending}
                           onClick={(e) => {
                             e.stopPropagation();
-                            setEditingPaymentId(member.payment.id);
-                            setEditStatus(member.payment.status || "PENDING");
-                            setEditMethod(member.payment.method || "CASH");
+                            setEditingMemberId(member.id);
+                            setEditStatus(member.payment?.status || "PENDING");
+                            setEditMethod(member.payment?.method || "CASH");
                           }}
                         >
                           <Repeat className="h-4 w-4 mr-2" />
@@ -148,7 +152,7 @@ export default function FamilyMembersDetail({ atirador }: { atirador: any }) {
             </p>
           )}
 
-          <Dialog open={editingPaymentId !== null} onOpenChange={(open) => {
+          <Dialog open={editingMemberId !== null} onOpenChange={(open) => {
             if (!open) closePaymentEdit();
           }}>
             <DialogContent onClick={(e) => e.stopPropagation()}>
