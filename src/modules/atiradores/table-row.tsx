@@ -44,8 +44,9 @@ export default function AtiradorTableRow({ atirador }: { atirador: any }) {
     startTransition(async () => {
       await updateAtirador(editingAtiradorId, {
         payment: {
-          status: editStatus,
-          method: (editStatus === "PAID" || editStatus === "FIRST_INSTALLMENT_PAID") ? editMethod : "CASH",
+          status: editStatus as "PENDING" | "PAID" | "FIRST_INSTALLMENT_PAID" | "CANCELED",
+          value: 0,
+          method: ((editStatus === "PAID" || editStatus === "FIRST_INSTALLMENT_PAID") ? editMethod : "CASH") as "CASH" | "CREDIT_CARD" | "DEBIT_CARD" | "PIX",
         }
       });
       closePaymentEdit();

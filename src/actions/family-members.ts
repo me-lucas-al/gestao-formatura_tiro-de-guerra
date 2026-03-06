@@ -3,9 +3,12 @@
 import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import {
+  CreateFamilyMemberData,
+  UpdateFamilyMemberData,
   createFamilyMemberSchema,
   updateFamilyMemberSchema,
-} from "@/schemas/family-members/family-member-schema";
+  deleteFamilyMemberSchema,
+} from "@packages/schemas/family-member.schema";
 
 export async function getFamilyMembers() {
   try {
@@ -25,7 +28,7 @@ export async function getFamilyMembers() {
   }
 }
 
-export async function createFamilyMember(data: any) {
+export async function createFamilyMember(data: CreateFamilyMemberData) {
   try {
     const parsed = createFamilyMemberSchema.safeParse(data);
 
@@ -76,7 +79,10 @@ export async function createFamilyMember(data: any) {
   }
 }
 
-export async function updateFamilyMember(id: number, data: any) {
+export async function updateFamilyMember(
+  id: number,
+  data: UpdateFamilyMemberData,
+) {
   try {
     if (isNaN(id)) {
       return { error: "ID inválido." };
@@ -138,7 +144,9 @@ export async function updateFamilyMember(id: number, data: any) {
 
 export async function deleteFamilyMember(id: number) {
   try {
-    if (isNaN(id)) {
+    const parsed = deleteFamilyMemberSchema.safeParse({ id });
+
+    if (!parsed.success) {
       return { error: "ID inválido." };
     }
 

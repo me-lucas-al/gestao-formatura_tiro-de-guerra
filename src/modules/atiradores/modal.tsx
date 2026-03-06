@@ -41,9 +41,9 @@ export default function AtiradorModal() {
 
         startTransition(async () => {
             const paymentData = {
-                status: paymentStatus,
+                status: paymentStatus as "PENDING" | "PAID" | "FIRST_INSTALLMENT_PAID" | "CANCELED",
                 value: 0,
-                method: paymentStatus === "PAID" || paymentStatus === "FIRST_INSTALLMENT_PAID" ? paymentMethod : "CASH",
+                method: (paymentStatus === "PAID" || paymentStatus === "FIRST_INSTALLMENT_PAID" ? paymentMethod : "CASH") as "CASH" | "CREDIT_CARD" | "DEBIT_CARD" | "PIX",
             };
 
             if (modalMode === "edit" && selectedAtirador) {

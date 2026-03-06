@@ -59,10 +59,10 @@ export default function FamilyMemberModal() {
       const isExempt = !isNaN(parsedAge) && parsedAge < 6;
 
       const paymentData = isExempt ? undefined : {
-        status: paymentStatus,
+        status: paymentStatus as "PENDING" | "PAID" | "FIRST_INSTALLMENT_PAID" | "CANCELED",
         value: 0,
         // Only consider method if PAID or FIRST_INSTALLMENT_PAID
-        method: paymentStatus === "PAID" || paymentStatus === "FIRST_INSTALLMENT_PAID" ? paymentMethod : "CASH",
+        method: (paymentStatus === "PAID" || paymentStatus === "FIRST_INSTALLMENT_PAID" ? paymentMethod : "CASH") as "CASH" | "CREDIT_CARD" | "DEBIT_CARD" | "PIX",
       };
 
       if (modalMode === "create") {

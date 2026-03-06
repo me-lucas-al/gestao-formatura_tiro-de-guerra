@@ -2,6 +2,11 @@
 
 import { db } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import {
+  UpdateAtiradorData,
+  updateAtiradorSchema,
+  deleteAtiradorSchema,
+} from "@packages/schemas/atirador.schema";
 
 export async function getAtiradores() {
   try {
@@ -26,14 +31,19 @@ export async function getAtiradores() {
   }
 }
 
-export async function updateAtirador(id: number, data: any) {
+export async function updateAtirador(id: number, data: UpdateAtiradorData) {
   try {
-    const { name, number, payment } = data;
+    const parsedData = updateAtiradorSchema.safeParse(data);
 
-    const updateData: any = {
-      name,
-      number,
-    };
+    if (!parsedData.success) {
+      return { error: "Dados inválidos.", issues: parsedData.error.format() };
+    }
+
+    const { name, number, payment } = parsedData.data;
+
+    const updateData: any = {};
+    if (name) updateData.name = name;
+    if (number !== undefined) updateData.number = number;
 
     if (payment) {
       updateData.payment = {
@@ -73,7 +83,9 @@ export async function updateAtirador(id: number, data: any) {
 
 export async function deleteAtirador(id: number) {
   try {
-    if (isNaN(id)) {
+    const parsed = deleteAtiradorSchema.safeParse({ id });
+
+    if (!parsed.success) {
       return { error: "ID inválido." };
     }
 
