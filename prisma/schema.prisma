@@ -17,6 +17,7 @@ enum PaymentStatus {
   PENDING
   PAID
   FIRST_INSTALLMENT_PAID
+  CANCELED
 }
 
 enum PaymentMethod {

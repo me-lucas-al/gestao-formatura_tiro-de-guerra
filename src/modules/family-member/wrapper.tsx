@@ -1,3 +1,5 @@
+"use client";
+
 import { useFamilyMemberModal } from "@/contexts/family-member-modal-context";
 import FamilyMemberModal from "./modal";
 

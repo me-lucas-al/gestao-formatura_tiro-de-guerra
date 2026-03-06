@@ -128,3 +128,39 @@ export async function updateFamilyMember(id: number, data: any) {
     return { error: "Erro interno ao processar a requisição." };
   }
 }
+
+export async function deleteFamilyMember(id: number) {
+  try {
+    if (isNaN(id)) {
+      return { error: "ID inválido." };
+    }
+
+    const familyMemberExists = await db.familyMember.findUnique({
+      where: { id },
+      include: { payment: true },
+    });
+
+    if (!familyMemberExists) {
+      return { error: `Familiar com ID ${id} não encontrado.` };
+    }
+
+    // Prisma handles cascading deletes if configured in schema,
+    // otherwise we might need to delete the payment first if it exists.
+    // Assuming schema handles the relationship correctly, otherwise:
+    if (familyMemberExists.payment) {
+      await db.payment.delete({ where: { id: familyMemberExists.payment.id } });
+    }
+
+    await db.familyMember.delete({
+      where: { id },
+    });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/familiares");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao deletar familiar:", error);
+    return { error: "Erro interno ao processar a requisição." };
+  }
+}

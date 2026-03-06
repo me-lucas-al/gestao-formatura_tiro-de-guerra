@@ -10,6 +10,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useState, useEffect, useTransition } from "react";
 import { createFamilyMember, updateFamilyMember } from "@/actions/family-members";
 
@@ -24,15 +31,21 @@ export default function FamilyMemberModal() {
 
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
+  const [paymentStatus, setPaymentStatus] = useState("PENDING");
+  const [paymentMethod, setPaymentMethod] = useState("CASH");
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (modalMode === "edit" && selectedFamilyMember) {
       setName(selectedFamilyMember.name);
       setAge(selectedFamilyMember.age.toString());
+      setPaymentStatus(selectedFamilyMember.payment?.status || "PENDING");
+      setPaymentMethod(selectedFamilyMember.payment?.method || "CASH");
     } else {
       setName("");
       setAge("");
+      setPaymentStatus("PENDING");
+      setPaymentMethod("CASH");
     }
   }, [modalMode, selectedFamilyMember]);
 
@@ -42,35 +55,37 @@ export default function FamilyMemberModal() {
     if (!selectedAtiradorId) return;
 
     startTransition(async () => {
+      const paymentData = {
+        status: paymentStatus,
+        value: 0,
+        // Only consider method if PAID or FIRST_INSTALLMENT_PAID
+        method: paymentStatus === "PAID" || paymentStatus === "FIRST_INSTALLMENT_PAID" ? paymentMethod : "CASH",
+      };
+
       if (modalMode === "create") {
         const res = await createFamilyMember({
           atiradorId: selectedAtiradorId,
           name,
           age: parseInt(age),
-          payment: {
-            status: "PENDING",
-            value: 0,
-            method: "CASH" // Default method, adjust as needed or pass from form
-          }
+          payment: paymentData,
         });
         if (res.success) {
           closeModal();
-          setName("");
-          setAge("");
         }
       } else if (modalMode === "edit" && selectedFamilyMember) {
         const res = await updateFamilyMember(selectedFamilyMember.id, {
           name,
           age: parseInt(age),
+          payment: paymentData,
         });
         if (res.success) {
           closeModal();
-          setName("");
-          setAge("");
         }
       }
     });
   };
+
+  const showPaymentMethod = paymentStatus === "PAID" || paymentStatus === "FIRST_INSTALLMENT_PAID";
 
   return (
     <Dialog open={isModalOpen} onOpenChange={closeModal}>
@@ -103,7 +118,40 @@ export default function FamilyMemberModal() {
               min="0"
             />
           </div>
-          <div className="flex justify-end gap-2">
+
+          <div>
+            <Label>Status do Pagamento</Label>
+            <Select value={paymentStatus} onValueChange={setPaymentStatus}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="PENDING">Pendente</SelectItem>
+                <SelectItem value="PAID">Pago</SelectItem>
+                <SelectItem value="FIRST_INSTALLMENT_PAID">Primeira Parcela Paga</SelectItem>
+                <SelectItem value="CANCELED">Cancelado</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {showPaymentMethod && (
+            <div>
+              <Label>Método de Pagamento</Label>
+              <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o método" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="CASH">Dinheiro</SelectItem>
+                  <SelectItem value="CREDIT_CARD">Cartão de Crédito</SelectItem>
+                  <SelectItem value="DEBIT_CARD">Cartão de Débito</SelectItem>
+                  <SelectItem value="PIX">PIX</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={closeModal}>
               Cancelar
             </Button>
