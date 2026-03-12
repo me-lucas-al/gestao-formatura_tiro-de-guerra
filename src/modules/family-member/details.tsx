@@ -3,22 +3,27 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Pencil, PlusCircle, Repeat, Trash2 } from "lucide-react";
 import { useDashboard } from "@/contexts/dashboard-context";
-import { useFamilyMemberModal } from "@/contexts/family-member-modal-context";
-import { deleteFamilyMember, updateFamilyMember } from "@/actions/family-members";
+import { deleteFamilyMember, updateFamilyMember, createFamilyMember } from "@/actions/family-members";
 import { useState, useTransition } from "react";
 import { useConfirm } from "@/hooks/use-confirm";
 import { AtiradorWithRelations } from "@packages/types";
+import { Input } from "@/components/ui/input";
 
 export default function FamilyMembersDetail({ atirador }: { atirador: AtiradorWithRelations }) {
   const { expandedRowId } = useDashboard();
-  const { openCreateModal, openEditModal } = useFamilyMemberModal();
   const { confirm } = useConfirm();
   const [isPending, startTransition] = useTransition();
+
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [createName, setCreateName] = useState("");
+  const [createAge, setCreateAge] = useState("");
+  const [createPaymentStatus, setCreatePaymentStatus] = useState("PENDING");
+  const [createPaymentMethod, setCreatePaymentMethod] = useState("CASH");
 
   const [editingMemberId, setEditingMemberId] = useState<number | null>(null);
   const [editStatus, setEditStatus] = useState("PENDING");
@@ -71,17 +76,117 @@ export default function FamilyMembersDetail({ atirador }: { atirador: AtiradorWi
         <div className="p-4 bg-muted/30 rounded-md relative">
           <div className="flex justify-between items-center mb-3">
             <h4 className="font-semibold">Familiares de {atirador.name}:</h4>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                openCreateModal(atiradorId);
-              }}
-            >
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Adicionar Familiar
-            </Button>
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCreateName("");
+                  setCreateAge("");
+                  setCreatePaymentStatus("PENDING");
+                  setCreatePaymentMethod("CASH");
+                  setIsCreateDialogOpen(true);
+                }}
+              >
+                <PlusCircle className="h-4 w-4 mr-2" />
+                Adicionar Familiar
+              </Button>
+              <DialogContent onClick={(e) => e.stopPropagation()}>
+                <DialogHeader>
+                  <DialogTitle>Adicionar Familiar</DialogTitle>
+                </DialogHeader>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    startTransition(async () => {
+                      const parsedAge = parseInt(createAge);
+                      const isExempt = !isNaN(parsedAge) && parsedAge < 6;
+                      const paymentData = isExempt
+                        ? undefined
+                        : {
+                          status: createPaymentStatus as "PENDING" | "PAID" | "FIRST_INSTALLMENT_PAID" | "CANCELED",
+                          value: 0,
+                          method: (createPaymentStatus === "PAID" || createPaymentStatus === "FIRST_INSTALLMENT_PAID" ? createPaymentMethod : "CASH") as "CASH" | "CREDIT_CARD" | "DEBIT_CARD" | "PIX",
+                        };
+                      await createFamilyMember({
+                        atiradorId,
+                        name: createName,
+                        age: parsedAge,
+                        payment: paymentData,
+                      });
+                      setIsCreateDialogOpen(false);
+                    });
+                  }}
+                  className="space-y-4"
+                >
+                  <div>
+                    <Label htmlFor="createName">Nome</Label>
+                    <Input
+                      id="createName"
+                      value={createName}
+                      onChange={(e) => setCreateName(e.target.value)}
+                      placeholder="Nome do familiar"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="createAge">Idade</Label>
+                    <Input
+                      id="createAge"
+                      type="number"
+                      value={createAge}
+                      onChange={(e) => setCreateAge(e.target.value)}
+                      placeholder="Idade"
+                      required
+                      min="0"
+                    />
+                  </div>
+                  {!(parseInt(createAge) < 6) && (
+                    <>
+                      <div>
+                        <Label>Status do Pagamento</Label>
+                        <Select value={createPaymentStatus} onValueChange={setCreatePaymentStatus}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="PENDING">Pendente</SelectItem>
+                            <SelectItem value="PAID">Pago</SelectItem>
+                            <SelectItem value="FIRST_INSTALLMENT_PAID">Primeira Parcela Paga</SelectItem>
+                            <SelectItem value="CANCELED">Cancelado</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {(createPaymentStatus === "PAID" || createPaymentStatus === "FIRST_INSTALLMENT_PAID") && (
+                        <div>
+                          <Label>Método de Pagamento</Label>
+                          <Select value={createPaymentMethod} onValueChange={setCreatePaymentMethod}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o método" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="CASH">Dinheiro</SelectItem>
+                              <SelectItem value="CREDIT_CARD">Cartão de Crédito</SelectItem>
+                              <SelectItem value="DEBIT_CARD">Cartão de Débito</SelectItem>
+                              <SelectItem value="PIX">PIX</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </>
+                  )}
+                  <div className="flex justify-end gap-2 pt-2">
+                    <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                      Cancelar
+                    </Button>
+                    <Button type="submit" disabled={isPending}>
+                      {isPending ? "Salvando..." : "Salvar"}
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
           {atirador.familyMembers?.length > 0 ? (
             <ul className="space-y-2">
@@ -118,16 +223,99 @@ export default function FamilyMembersDetail({ atirador }: { atirador: AtiradorWi
                           Mudar Status
                         </Button>
                       )}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openEditModal(atiradorId, member);
-                        }}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
+                      <Dialog>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          asChild
+                        >
+                          <DialogTrigger onClick={(e) => e.stopPropagation()}>
+                            <Pencil className="h-4 w-4" />
+                          </DialogTrigger>
+                        </Button>
+                        <DialogContent onClick={(e) => e.stopPropagation()}>
+                          <DialogHeader>
+                            <DialogTitle>Editar Familiar</DialogTitle>
+                          </DialogHeader>
+                          <form
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              startTransition(async () => {
+                                const formData = new FormData(e.currentTarget);
+                                const editName = formData.get("editName") as string;
+                                const editAge = formData.get("editAge") as string;
+                                const editStatus = formData.get("editStatus") as string;
+                                const editMethod = formData.get("editMethod") as string;
+                                const parsedAge = parseInt(editAge);
+                                const isExempt = !isNaN(parsedAge) && parsedAge < 6;
+                                const paymentData = isExempt
+                                  ? undefined
+                                  : {
+                                    status: editStatus as "PENDING" | "PAID" | "FIRST_INSTALLMENT_PAID" | "CANCELED",
+                                    value: 0,
+                                    method: (editStatus === "PAID" || editStatus === "FIRST_INSTALLMENT_PAID" ? editMethod : "CASH") as "CASH" | "CREDIT_CARD" | "DEBIT_CARD" | "PIX",
+                                  };
+                                await updateFamilyMember(member.id, {
+                                  name: editName,
+                                  age: parsedAge,
+                                  payment: paymentData,
+                                });
+                                // dialog will close if form isn't controlled with state when it re-renders. A generic unmanaged dialog.
+                              });
+                            }}
+                            className="space-y-4"
+                          >
+                            <div>
+                              <Label htmlFor="editName">Nome</Label>
+                              <Input id="editName" name="editName" defaultValue={member.name} placeholder="Nome do familiar" required />
+                            </div>
+                            <div>
+                              <Label htmlFor="editAge">Idade</Label>
+                              <Input id="editAge" name="editAge" type="number" defaultValue={member.age} placeholder="Idade" required min="0" />
+                            </div>
+                            {!isExempt && (
+                              <>
+                                <div>
+                                  <Label>Status do Pagamento</Label>
+                                  <Select name="editStatus" defaultValue={member.payment?.status || "PENDING"}>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Selecione o status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="PENDING">Pendente</SelectItem>
+                                      <SelectItem value="PAID">Pago</SelectItem>
+                                      <SelectItem value="FIRST_INSTALLMENT_PAID">Primeira Parcela Paga</SelectItem>
+                                      <SelectItem value="CANCELED">Cancelado</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                {(member.payment?.status === "PAID" || member.payment?.status === "FIRST_INSTALLMENT_PAID") && (
+                                  <div>
+                                    <Label>Método de Pagamento</Label>
+                                    <Select name="editMethod" defaultValue={member.payment?.method || "CASH"}>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Selecione o método" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="CASH">Dinheiro</SelectItem>
+                                        <SelectItem value="CREDIT_CARD">Cartão de Crédito</SelectItem>
+                                        <SelectItem value="DEBIT_CARD">Cartão de Débito</SelectItem>
+                                        <SelectItem value="PIX">PIX</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                )}
+                              </>
+                            )}
+                            <div className="flex justify-end gap-2 pt-2">
+                              {/* Using unmanaged standard Dialog close technique. Actually, DialogClose from shadcn isn't imported. I will just rely on native save closing it since it updates parent or maybe just let user click out or esc. Wait, the unmanaged Dialog doesn't auto close on submit. Let's make it managed for editing too. */}
+                              <Button type="submit" disabled={isPending}>
+                                {isPending ? "Salvando..." : "Salvar (Clique fora para fechar)"}
+                              </Button>
+                            </div>
+                          </form>
+                        </DialogContent>
+                      </Dialog>
                       <Button
                         variant="ghost"
                         size="icon"

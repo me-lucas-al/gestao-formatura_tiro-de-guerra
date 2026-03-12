@@ -9,21 +9,51 @@ import { Label } from "@/components/ui/label";
 import { ChevronDown, ChevronRight, Pencil, Repeat, Trash2 } from "lucide-react";
 import { useDashboard } from "@/contexts/dashboard-context";
 import { deleteAtirador, updateAtirador } from "@/actions/atiradores";
-import { useAtiradorModal } from "@/contexts/atirador-modal-context";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useConfirm } from "@/hooks/use-confirm";
 import { AtiradorWithRelations } from "@packages/types";
+import { Input } from "@/components/ui/input";
 
 export default function AtiradorTableRow({ atirador }: { atirador: AtiradorWithRelations }) {
   const { expandedRowId, toggleRow } = useDashboard();
-  const { openEditModal } = useAtiradorModal();
   const { confirm } = useConfirm();
   const [isPending, startTransition] = useTransition();
 
   const [editingAtiradorId, setEditingAtiradorId] = useState<number | null>(null);
-  const [editStatus, setEditStatus] = useState("PENDING");
-  const [editMethod, setEditMethod] = useState("CASH");
+  const [editStatus, setEditStatus] = useState<string>("PENDING");
+  const [editMethod, setEditMethod] = useState<string>("CASH");
 
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editName, setEditName] = useState(atirador.name);
+  const [editNumber, setEditNumber] = useState(atirador.number.toString());
+  const [editAtiradorStatus, setEditAtiradorStatus] = useState<string>(atirador.payment?.status || "PENDING");
+  const [editAtiradorMethod, setEditAtiradorMethod] = useState<string>(atirador.payment?.method || "CASH");
+
+  useEffect(() => {
+    if (isEditDialogOpen) {
+      setEditName(atirador.name);
+      setEditNumber(atirador.number.toString());
+      setEditAtiradorStatus(atirador.payment?.status || "PENDING");
+      setEditAtiradorMethod(atirador.payment?.method || "CASH");
+    }
+  }, [isEditDialogOpen, atirador]);
+
+  const submitEditAtirador = (e: React.FormEvent) => {
+    e.preventDefault();
+    startTransition(async () => {
+      const paymentData = {
+        status: editAtiradorStatus as "PENDING" | "PAID" | "FIRST_INSTALLMENT_PAID" | "CANCELED",
+        value: 0,
+        method: (editAtiradorStatus === "PAID" || editAtiradorStatus === "FIRST_INSTALLMENT_PAID" ? editAtiradorMethod : "CASH") as "CASH" | "CREDIT_CARD" | "DEBIT_CARD" | "PIX",
+      };
+      await updateAtirador(atirador.id, {
+        name: editName,
+        number: parseInt(editNumber),
+        payment: paymentData,
+      });
+      setIsEditDialogOpen(false);
+    });
+  };
   const atiradorId = atirador.id;
 
   if (!atirador) return null;
@@ -110,16 +140,88 @@ export default function AtiradorTableRow({ atirador }: { atirador: AtiradorWithR
             Mudar Status
           </Button>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={(e) => {
-              e.stopPropagation();
-              openEditModal(atirador);
-            }}
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditDialogOpen(true);
+              }}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <DialogContent onClick={(e) => e.stopPropagation()}>
+              <DialogHeader>
+                <DialogTitle>Editar Atirador</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={submitEditAtirador} className="space-y-4">
+                <div>
+                  <Label htmlFor="number">Número</Label>
+                  <Input
+                    id="number"
+                    type="number"
+                    value={editNumber}
+                    onChange={(e) => setEditNumber(e.target.value)}
+                    placeholder="Número do atirador (ex: 01)"
+                    required
+                    min="1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="name">Nome</Label>
+                  <Input
+                    id="name"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    placeholder="Nome do atirador"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label>Status do Pagamento</Label>
+                  <Select value={editAtiradorStatus} onValueChange={setEditAtiradorStatus}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="PENDING">Pendente</SelectItem>
+                      <SelectItem value="PAID">Pago</SelectItem>
+                      <SelectItem value="FIRST_INSTALLMENT_PAID">Primeira Parcela Paga</SelectItem>
+                      <SelectItem value="CANCELED">Cancelado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {(editAtiradorStatus === "PAID" || editAtiradorStatus === "FIRST_INSTALLMENT_PAID") && (
+                  <div>
+                    <Label>Método de Pagamento</Label>
+                    <Select value={editAtiradorMethod} onValueChange={setEditAtiradorMethod}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o método" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="CASH">Dinheiro</SelectItem>
+                        <SelectItem value="CREDIT_CARD">Cartão de Crédito</SelectItem>
+                        <SelectItem value="DEBIT_CARD">Cartão de Débito</SelectItem>
+                        <SelectItem value="PIX">PIX</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" disabled={isPending}>
+                    {isPending ? "Salvando..." : "Salvar"}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
 
           <Button
             variant="ghost"

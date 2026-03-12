@@ -1,36 +1,21 @@
 "use client";
 
-import { useAtiradorModal } from "@/contexts/atirador-modal-context";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState, useTransition } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, useEffect, useTransition } from "react";
-import { updateAtirador, createAtirador } from "@/actions/atiradores";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PlusCircle } from "lucide-react";
+import { createAtirador } from "@/actions/atiradores";
 
-export default function AtiradorModal() {
-    const { isModalOpen, modalMode, selectedAtirador, closeModal } = useAtiradorModal();
-
+export default function CreateAtiradorButton() {
+    const [open, setOpen] = useState(false);
     const [name, setName] = useState("");
     const [number, setNumber] = useState("");
     const [paymentStatus, setPaymentStatus] = useState("PENDING");
     const [paymentMethod, setPaymentMethod] = useState("CASH");
     const [isPending, startTransition] = useTransition();
-
-    useEffect(() => {
-        if (modalMode === "edit" && selectedAtirador) {
-            setName(selectedAtirador.name || "");
-            setNumber(selectedAtirador.number?.toString() || "");
-            setPaymentStatus(selectedAtirador.payment?.status || "PENDING");
-            setPaymentMethod(selectedAtirador.payment?.method || "CASH");
-        } else {
-            setName("");
-            setNumber("");
-            setPaymentStatus("PENDING");
-            setPaymentMethod("CASH");
-        }
-    }, [modalMode, selectedAtirador]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -42,28 +27,19 @@ export default function AtiradorModal() {
                 method: (paymentStatus === "PAID" || paymentStatus === "FIRST_INSTALLMENT_PAID" ? paymentMethod : "CASH") as "CASH" | "CREDIT_CARD" | "DEBIT_CARD" | "PIX",
             };
 
-            if (modalMode === "edit" && selectedAtirador) {
-                const res = await updateAtirador(selectedAtirador.id, {
-                    name,
-                    number: parseInt(number),
-                    payment: paymentData,
-                });
-                if (res.success) {
-                    closeModal();
-                } else {
-                    console.error(res.error);
-                }
+            const res = await createAtirador({
+                name,
+                number: parseInt(number),
+                payment: paymentData,
+            });
+            if (res.success) {
+                setOpen(false);
+                setName("");
+                setNumber("");
+                setPaymentStatus("PENDING");
+                setPaymentMethod("CASH");
             } else {
-                const res = await createAtirador({
-                    name,
-                    number: parseInt(number),
-                    payment: paymentData,
-                });
-                if (res.success) {
-                    closeModal();
-                } else {
-                    console.error(res.error);
-                }
+                console.error(res.error);
             }
         });
     };
@@ -71,12 +47,16 @@ export default function AtiradorModal() {
     const showPaymentMethod = paymentStatus === "PAID" || paymentStatus === "FIRST_INSTALLMENT_PAID";
 
     return (
-        <Dialog open={isModalOpen} onOpenChange={closeModal}>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Adicionar Atirador
+                </Button>
+            </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>
-                        {modalMode === "create" ? "Adicionar Atirador" : "Editar Atirador"}
-                    </DialogTitle>
+                    <DialogTitle>Adicionar Atirador</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -135,7 +115,7 @@ export default function AtiradorModal() {
                     )}
 
                     <div className="flex justify-end gap-2 pt-2">
-                        <Button type="button" variant="outline" onClick={closeModal}>
+                        <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                             Cancelar
                         </Button>
                         <Button type="submit" disabled={isPending}>
