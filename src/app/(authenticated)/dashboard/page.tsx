@@ -4,9 +4,16 @@
 import { useEffect, useState } from "react";
 import { apiGet } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AtiradorWithRelations } from "@packages/types";
+
+interface AdminData {
+  id: number;
+  name: string;
+  atiradores: AtiradorWithRelations[];
+}
 
 export default function Dashboard() {
-  const [adminData, setAdminData] = useState<Admin | null>(null);
+  const [adminData, setAdminData] = useState<AdminData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -85,7 +92,7 @@ export default function Dashboard() {
                       <td className="px-6 py-4 whitespace-nowrap">{atirador.familyMemberQuantity}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {/* Lógica simples para verificar o pagamento */}
-                        {atirador.payments.some(p => p.isPaid) ? (
+                        {atirador.payment?.isPaid ? (
                           <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                             Pago
                           </span>

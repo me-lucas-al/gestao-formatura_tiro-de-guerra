@@ -22,7 +22,7 @@ export async function GET() {
       include: {
         atiradores: {
           include: {
-            payments: true,
+            payment: true,
           },
         },
       },
@@ -32,7 +32,7 @@ export async function GET() {
       return NextResponse.json({ error: "Administrador não encontrado" }, { status: 404 });
     }
 
-    const { password, ...adminWithoutPassword } = admin;
+    const { password: _, ...adminWithoutPassword } = admin;
 
     return NextResponse.json(adminWithoutPassword);
   } catch (err) {

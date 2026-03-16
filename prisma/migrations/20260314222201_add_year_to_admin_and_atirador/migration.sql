@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Admin" ADD COLUMN     "year" INTEGER NOT NULL DEFAULT 2026;
+
+-- AlterTable
+ALTER TABLE "Atirador" ADD COLUMN     "year" INTEGER NOT NULL DEFAULT 2026;

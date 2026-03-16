@@ -27,7 +27,7 @@ export async function apiGet(endpoint: string) {
   return res.json();
 }
 
-export async function apiPost(endpoint: string, body: any, withAuth = true) {
+export async function apiPost(endpoint: string, body: unknown, withAuth = true) {
   const token = withAuth ? getToken() : null;
   const url = `${API_URL}${endpoint}`;
 

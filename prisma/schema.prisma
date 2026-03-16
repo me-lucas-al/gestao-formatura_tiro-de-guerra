@@ -10,32 +10,73 @@ generator client {
 
 datasource formatura_db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Admin {
   id        Int      @id @default(autoincrement())
-  name      String
+  name      String   @unique
+  email     String?  @unique
   password  String
+  role      String   @default("ADMIN")
+  year      Int      @default(2025)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   atiradores Atirador[]
 }
-model Payment {
-  id         Int   @id @default(autoincrement())
-  amount     Float
+
+model Atirador {
+  id                   Int            @id @default(autoincrement())
+  name                 String
+  number               Int?
+  year                 Int            @default(2025)
+  familyMemberQuantity Int
+  adminId              Int
+  admin                Admin          @relation(fields: [adminId], references: [id])
+  payment              Payment?       @relation(fields: [paymentId], references: [id])
+  paymentId            Int?           @unique
+  familyMembers        FamilyMember[]
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  @@unique([number, year])
+}
+
+model FamilyMember {
+  id         Int      @id @default(autoincrement())
+  name       String
+  cpf        String?
+  atiradorId Int
+  atirador   Atirador @relation(fields: [atiradorId], references: [id])
+  payment    Payment? @relation(fields: [paymentId], references: [id])
+  paymentId  Int?     @unique
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  isPaid     Boolean  @default(false)
-  atiradorId Int
-  atirador      Atirador     @relation(fields: [atiradorId], references: [id])
 }
-model Atirador {
-    id        Int   @id @default(autoincrement())
-    name      String
-    familyMemberQuantity Int
-    adminId   Int
-    admin     Admin  @relation(fields: [adminId], references: [id])
-    payments Payment[]
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  CANCELLED
+  FIRST_INSTALLMENT_PAID
+  ISENTO
+}
+
+enum PaymentMethod {
+  PIX
+  CREDIT_CARD
+  CASH
+}
+
+model Payment {
+  id        Int           @id @default(autoincrement())
+  value     Float
+  isPaid    Boolean       @default(false)
+  status    PaymentStatus @default(PENDING)
+  method    PaymentMethod?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  atirador     Atirador?
+  familyMember FamilyMember?
 }
