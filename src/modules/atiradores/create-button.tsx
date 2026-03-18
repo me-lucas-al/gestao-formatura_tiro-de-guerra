@@ -41,7 +41,8 @@ export default function CreateAtiradorButton() {
           | "PENDING"
           | "PAID"
           | "FIRST_INSTALLMENT_PAID"
-          | "CANCELED",
+          | "CANCELED"
+          | "ISENTO",
         value: parseFloat(paymentValue) || 0,
         method: (paymentStatus === "PAID" ||
         paymentStatus === "FIRST_INSTALLMENT_PAID"
@@ -142,6 +143,7 @@ export default function CreateAtiradorButton() {
                     Primeira Parcela Paga
                   </SelectItem>
                   <SelectItem value="CANCELED">Cancelado</SelectItem>
+                  <SelectItem value="ISENTO">Isento</SelectItem>
                 </SelectContent>
               </Select>
             </div>

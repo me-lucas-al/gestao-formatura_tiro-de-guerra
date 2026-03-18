@@ -1,11 +1,17 @@
-export default function AuthenticatedLayout({
+import { SessionProvider } from "@/hooks/use-session";
+import { getSession } from "@/actions/admin";
+import { redirect } from "next/navigation";
+
+export default async function AuthenticatedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <section className="min-h-screen bg-gray-50">
-      {children}
-    </section>
-  );
+  const session = await getSession();
+
+  if (!session.success || !session.data) {
+    redirect("/");
+  }
+
+  return <SessionProvider admin={session.data}>{children}</SessionProvider>;
 }

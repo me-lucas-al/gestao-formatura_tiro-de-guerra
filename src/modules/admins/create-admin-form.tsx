@@ -28,7 +28,7 @@ export function CreateAdminForm({ isSuperAdmin }: CreateAdminFormProps) {
       const result = await createAdmin(formData);
 
       if (result.success) {
-        toast.success("Administrador criado com sucesso! Senha padrão: admin123");
+        toast.success(result.message ?? "Administrador criado com sucesso! Senha padrão: admin123");
         formRef.current?.reset();
       } else {
         const fieldMsg = result.fieldErrors
@@ -56,25 +56,44 @@ export function CreateAdminForm({ isSuperAdmin }: CreateAdminFormProps) {
 
       <div className="p-6">
         <form ref={formRef} action={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label
-              htmlFor="name"
-              className="text-slate-700 font-medium text-sm uppercase tracking-wide"
-            >
-              Nome Completo
-            </Label>
-            <Input
-              id="name"
-              name="name"
-              placeholder="Ex: Sgt. Silva"
-              required
-              disabled={isPending}
-              className="rounded-sm border-slate-300 focus-visible:ring-green-800"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label
+                htmlFor="name"
+                className="text-slate-700 font-medium text-sm uppercase tracking-wide"
+              >
+                Nome Completo
+              </Label>
+              <Input
+                id="name"
+                name="name"
+                placeholder="Ex: Sgt. Silva"
+                required
+                disabled={isPending}
+                className="rounded-sm border-slate-300 focus-visible:ring-green-800"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="email"
+                className="text-slate-700 font-medium text-sm uppercase tracking-wide"
+              >
+                E-mail Institucional (Opcional)
+              </Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Ex: sgtsilva@tg02009.eb.mil.br"
+                disabled={isPending}
+                className="rounded-sm border-slate-300 focus-visible:ring-green-800"
+              />
+            </div>
           </div>
 
           {isSuperAdmin && (
-            <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label
                   htmlFor="role"
@@ -88,7 +107,7 @@ export function CreateAdminForm({ isSuperAdmin }: CreateAdminFormProps) {
                   disabled={isPending}
                   defaultValue="ADMIN"
                 >
-                  <SelectTrigger className="rounded-sm border-slate-300 focus:ring-green-800 w-full md:w-[50%]">
+                  <SelectTrigger className="rounded-sm border-slate-300 focus:ring-green-800 w-full">
                     <SelectValue placeholder="Selecione o Nível" />
                   </SelectTrigger>
                   <SelectContent>
@@ -114,10 +133,10 @@ export function CreateAdminForm({ isSuperAdmin }: CreateAdminFormProps) {
                   defaultValue={new Date().getFullYear()}
                   required
                   disabled={isPending}
-                  className="rounded-sm border-slate-300 focus-visible:ring-green-800 w-full md:w-[50%]"
+                  className="rounded-sm border-slate-300 focus-visible:ring-green-800 w-full"
                 />
               </div>
-            </>
+            </div>
           )}
 
           <div className="pt-4 flex items-center justify-between border-t border-slate-100">

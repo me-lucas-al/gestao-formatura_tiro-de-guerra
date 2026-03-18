@@ -2,14 +2,28 @@ import { db } from "@/lib/prisma";
 import type { CreateAdminInput, AdminEntity } from "@/schemas/admin";
 
 export const AdminService = {
+  async findByEmail(email: string): Promise<AdminEntity | null> {
+    return db.admin.findUnique({
+      where: { email },
+      omit: { password: true },
+    });
+  },
+
+  async findByName(name: string): Promise<AdminEntity | null> {
+    return db.admin.findUnique({
+      where: { name },
+      omit: { password: true },
+    });
+  },
+
   async createAdmin(
-    input: CreateAdminInput & { email: string },
+    input: CreateAdminInput,
     passwordHash: string,
   ): Promise<AdminEntity> {
     return db.admin.create({
       data: {
         name: input.name,
-        email: input.email,
+        email: input.email || null,
         role: input.role,
         year: input.year,
         password: passwordHash,

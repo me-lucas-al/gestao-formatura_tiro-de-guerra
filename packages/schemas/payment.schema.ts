@@ -11,7 +11,6 @@ export const PaymentStatusEnum = z.enum([
   "PAID",
   "FIRST_INSTALLMENT_PAID",
   "CANCELED",
-  "ISENTO",
 ]);
 
 export const paymentSchema = z.object({

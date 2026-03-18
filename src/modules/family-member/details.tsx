@@ -53,7 +53,7 @@ const getStatusBadge = (status?: string) => {
       );
     case "ISENTO":
       return (
-        <Badge className="bg-slate-200 text-slate-700 text-xs rounded-sm font-bold uppercase tracking-wider">
+        <Badge className="bg-purple-700 text-white text-xs rounded-sm font-bold uppercase tracking-wider">
           Isento
         </Badge>
       );
@@ -154,17 +154,18 @@ export default function FamilyMembersDetail({
     if (!editingFamilyId) return;
     startTransition(async () => {
       const parsedAge = parseInt(editFamilyAge);
+      const isExempt = !isNaN(parsedAge) && parsedAge < 6;
       const res = await updateFamilyMember(editingFamilyId, {
         name: editFamilyName,
         age: parsedAge,
         payment: {
-          status: editFamilyStatus as
+          status: (isExempt ? "ISENTO" : editFamilyStatus) as
             | "PENDING"
             | "PAID"
             | "FIRST_INSTALLMENT_PAID"
             | "CANCELED"
             | "ISENTO",
-          value: parseFloat(editFamilyValue) || 0,
+          value: isExempt ? 0 : parseFloat(editFamilyValue) || 0,
           method: (editFamilyStatus === "PAID" ||
           editFamilyStatus === "FIRST_INSTALLMENT_PAID"
             ? editFamilyMethod
@@ -216,6 +217,7 @@ export default function FamilyMembersDetail({
           {atirador.familyMembers?.length > 0 ? (
             <ul className="space-y-1">
               {atirador.familyMembers.map((member) => {
+                const isExempt = member.age < 6;
                 return (
                   <li
                     key={member.id}
@@ -228,7 +230,13 @@ export default function FamilyMembersDetail({
                       <span className="text-xs text-slate-500">
                         Idade: {member.age}
                       </span>
-                      {getStatusBadge(member.payment?.status)}
+                      {isExempt ? (
+                        <Badge className="bg-purple-700 text-white text-xs rounded-sm font-bold uppercase tracking-wider">
+                          Isento
+                        </Badge>
+                      ) : (
+                        getStatusBadge(member.payment?.status)
+                      )}
                       {member.payment?.value ? (
                         <span className="text-xs font-semibold text-slate-600">
                           R$ {member.payment.value.toFixed(2)}
@@ -236,22 +244,24 @@ export default function FamilyMembersDetail({
                       ) : null}
                     </div>
                     <div className="flex items-center gap-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="rounded-sm text-xs h-7"
-                        disabled={isPending}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingMemberId(member.id);
-                          setEditStatus(member.payment?.status || "PENDING");
-                          setEditMethod(member.payment?.method || "CASH");
-                          setEditStatusValue(member.payment?.value?.toString() || "");
-                        }}
-                      >
-                        <Repeat className="h-3 w-3 mr-1" />
-                        Status
-                      </Button>
+                      {!isExempt && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-sm text-xs h-7"
+                          disabled={isPending}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingMemberId(member.id);
+                            setEditStatus(member.payment?.status || "PENDING");
+                            setEditMethod(member.payment?.method || "CASH");
+                            setEditStatusValue(member.payment?.value?.toString() || "");
+                          }}
+                        >
+                          <Repeat className="h-3 w-3 mr-1" />
+                          Status
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"
@@ -322,18 +332,19 @@ export default function FamilyMembersDetail({
                   e.preventDefault();
                   startTransition(async () => {
                     const parsedAge = parseInt(createAge);
+                    const isExempt = !isNaN(parsedAge) && parsedAge < 6;
                     const res = await createFamilyMember({
                       atiradorId,
                       name: createName,
                       age: parsedAge,
                       payment: {
-                        status: createPaymentStatus as
+                        status: (isExempt ? "ISENTO" : createPaymentStatus) as
                           | "PENDING"
                           | "PAID"
                           | "FIRST_INSTALLMENT_PAID"
                           | "CANCELED"
                           | "ISENTO",
-                        value: parseFloat(createPaymentValue) || 0,
+                        value: isExempt ? 0 : parseFloat(createPaymentValue) || 0,
                         method: (createPaymentStatus === "PAID" ||
                         createPaymentStatus === "FIRST_INSTALLMENT_PAID"
                           ? createPaymentMethod
@@ -380,68 +391,72 @@ export default function FamilyMembersDetail({
                     className="rounded-sm border-slate-300 focus-visible:ring-green-800/50"
                   />
                 </div>
-                <div>
-                  <Label className="text-xs font-semibold uppercase tracking-wide text-slate-600">
-                    Status do Pagamento
-                  </Label>
-                  <Select
-                    value={createPaymentStatus}
-                    onValueChange={setCreatePaymentStatus}
-                  >
-                    <SelectTrigger className="rounded-sm border-slate-300">
-                      <SelectValue placeholder="Selecione o status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="PENDING">Pendente</SelectItem>
-                      <SelectItem value="PAID">Pago</SelectItem>
-                      <SelectItem value="FIRST_INSTALLMENT_PAID">
-                        Primeira Parcela Paga
-                      </SelectItem>
-                      <SelectItem value="CANCELED">Cancelado</SelectItem>
-                      <SelectItem value="ISENTO">Isento</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {(createPaymentStatus === "PAID" ||
-                  createPaymentStatus === "FIRST_INSTALLMENT_PAID") && (
+                {!(parseInt(createAge) < 6) && (
                   <>
                     <div>
                       <Label className="text-xs font-semibold uppercase tracking-wide text-slate-600">
-                        Metodo de Pagamento
+                        Status do Pagamento
                       </Label>
                       <Select
-                        value={createPaymentMethod}
-                        onValueChange={setCreatePaymentMethod}
+                        value={createPaymentStatus}
+                        onValueChange={setCreatePaymentStatus}
                       >
                         <SelectTrigger className="rounded-sm border-slate-300">
-                          <SelectValue placeholder="Selecione o metodo" />
+                          <SelectValue placeholder="Selecione o status" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="CASH">Dinheiro</SelectItem>
-                          <SelectItem value="CREDIT_CARD">
-                            Cartao de Credito
+                          <SelectItem value="PENDING">Pendente</SelectItem>
+                          <SelectItem value="PAID">Pago</SelectItem>
+                          <SelectItem value="FIRST_INSTALLMENT_PAID">
+                            Primeira Parcela Paga
                           </SelectItem>
-                          <SelectItem value="DEBIT_CARD">
-                            Cartao de Debito
-                          </SelectItem>
-                          <SelectItem value="PIX">PIX</SelectItem>
+                          <SelectItem value="CANCELED">Cancelado</SelectItem>
+                          <SelectItem value="ISENTO">Isento</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    <div>
-                      <Label className="text-xs font-semibold uppercase tracking-wide text-slate-600">
-                        Valor do Pagamento (R$)
-                      </Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={createPaymentValue}
-                        onChange={(e) => setCreatePaymentValue(e.target.value)}
-                        placeholder="0.00"
-                        className="rounded-sm border-slate-300 focus-visible:ring-green-800/50"
-                      />
-                    </div>
+                    {(createPaymentStatus === "PAID" ||
+                      createPaymentStatus === "FIRST_INSTALLMENT_PAID") && (
+                      <>
+                        <div>
+                          <Label className="text-xs font-semibold uppercase tracking-wide text-slate-600">
+                            Metodo de Pagamento
+                          </Label>
+                          <Select
+                            value={createPaymentMethod}
+                            onValueChange={setCreatePaymentMethod}
+                          >
+                            <SelectTrigger className="rounded-sm border-slate-300">
+                              <SelectValue placeholder="Selecione o metodo" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="CASH">Dinheiro</SelectItem>
+                              <SelectItem value="CREDIT_CARD">
+                                Cartao de Credito
+                              </SelectItem>
+                              <SelectItem value="DEBIT_CARD">
+                                Cartao de Debito
+                              </SelectItem>
+                              <SelectItem value="PIX">PIX</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-xs font-semibold uppercase tracking-wide text-slate-600">
+                            Valor do Pagamento (R$)
+                          </Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={createPaymentValue}
+                            onChange={(e) => setCreatePaymentValue(e.target.value)}
+                            placeholder="0.00"
+                            className="rounded-sm border-slate-300 focus-visible:ring-green-800/50"
+                          />
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
                 <DialogFooter>
@@ -509,67 +524,71 @@ export default function FamilyMembersDetail({
                     className="rounded-sm border-slate-300 focus-visible:ring-green-800/50"
                   />
                 </div>
-                <div>
-                  <Label className="text-xs font-semibold uppercase tracking-wide text-slate-600">
-                    Status do Pagamento
-                  </Label>
-                  <Select
-                    value={editFamilyStatus}
-                    onValueChange={setEditFamilyStatus}
-                  >
-                    <SelectTrigger className="rounded-sm border-slate-300">
-                      <SelectValue placeholder="Selecione o status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="PENDING">Pendente</SelectItem>
-                      <SelectItem value="PAID">Pago</SelectItem>
-                      <SelectItem value="FIRST_INSTALLMENT_PAID">
-                        Primeira Parcela Paga
-                      </SelectItem>
-                      <SelectItem value="CANCELED">Cancelado</SelectItem>
-                      <SelectItem value="ISENTO">Isento</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {showEditPaymentMethod && (
+                {!(parseInt(editFamilyAge) < 6) && (
                   <>
                     <div>
                       <Label className="text-xs font-semibold uppercase tracking-wide text-slate-600">
-                        Metodo de Pagamento
+                        Status do Pagamento
                       </Label>
                       <Select
-                        value={editFamilyMethod}
-                        onValueChange={setEditFamilyMethod}
+                        value={editFamilyStatus}
+                        onValueChange={setEditFamilyStatus}
                       >
                         <SelectTrigger className="rounded-sm border-slate-300">
-                          <SelectValue placeholder="Selecione o metodo" />
+                          <SelectValue placeholder="Selecione o status" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="CASH">Dinheiro</SelectItem>
-                          <SelectItem value="CREDIT_CARD">
-                            Cartao de Credito
+                          <SelectItem value="PENDING">Pendente</SelectItem>
+                          <SelectItem value="PAID">Pago</SelectItem>
+                          <SelectItem value="FIRST_INSTALLMENT_PAID">
+                            Primeira Parcela Paga
                           </SelectItem>
-                          <SelectItem value="DEBIT_CARD">
-                            Cartao de Debito
-                          </SelectItem>
-                          <SelectItem value="PIX">PIX</SelectItem>
+                          <SelectItem value="CANCELED">Cancelado</SelectItem>
+                          <SelectItem value="ISENTO">Isento</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    <div>
-                      <Label className="text-xs font-semibold uppercase tracking-wide text-slate-600">
-                        Valor do Pagamento (R$)
-                      </Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={editFamilyValue}
-                        onChange={(e) => setEditFamilyValue(e.target.value)}
-                        placeholder="0.00"
-                        className="rounded-sm border-slate-300 focus-visible:ring-green-800/50"
-                      />
-                    </div>
+                    {showEditPaymentMethod && (
+                      <>
+                        <div>
+                          <Label className="text-xs font-semibold uppercase tracking-wide text-slate-600">
+                            Metodo de Pagamento
+                          </Label>
+                          <Select
+                            value={editFamilyMethod}
+                            onValueChange={setEditFamilyMethod}
+                          >
+                            <SelectTrigger className="rounded-sm border-slate-300">
+                              <SelectValue placeholder="Selecione o metodo" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="CASH">Dinheiro</SelectItem>
+                              <SelectItem value="CREDIT_CARD">
+                                Cartao de Credito
+                              </SelectItem>
+                              <SelectItem value="DEBIT_CARD">
+                                Cartao de Debito
+                              </SelectItem>
+                              <SelectItem value="PIX">PIX</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-xs font-semibold uppercase tracking-wide text-slate-600">
+                            Valor do Pagamento (R$)
+                          </Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={editFamilyValue}
+                            onChange={(e) => setEditFamilyValue(e.target.value)}
+                            placeholder="0.00"
+                            className="rounded-sm border-slate-300 focus-visible:ring-green-800/50"
+                          />
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
                 <DialogFooter>

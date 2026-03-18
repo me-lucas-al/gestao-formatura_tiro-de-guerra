@@ -59,6 +59,8 @@ export async function createFamilyMember(data: CreateFamilyMemberData) {
     });
 
     revalidatePath("/dashboard");
+    revalidatePath("/familiares");
+
     return { success: true, data: newFamilyMember };
   } catch (error) {
     console.error("Erro ao criar familiar:", error);
@@ -94,6 +96,8 @@ export async function updateFamilyMember(
     });
 
     revalidatePath("/dashboard");
+    revalidatePath("/familiares");
+
     return { success: true, data: updatedFamilyMember };
   } catch (error) {
     console.error("Erro ao atualizar familiar:", error);
@@ -117,6 +121,8 @@ export async function deleteFamilyMember(id: number) {
     }
 
     revalidatePath("/dashboard");
+    revalidatePath("/familiares");
+
     return { success: true };
   } catch (error) {
     console.error("Erro ao deletar familiar:", error);

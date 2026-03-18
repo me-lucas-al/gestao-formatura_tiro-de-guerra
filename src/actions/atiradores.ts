@@ -70,6 +70,8 @@ export async function createAtirador(data: CreateAtiradorData) {
     });
 
     revalidatePath("/dashboard");
+    revalidatePath("/atiradores");
+
     return { success: true, data: newAtirador };
   } catch (error) {
     console.error("Erro ao criar atirador:", error);
@@ -102,6 +104,8 @@ export async function updateAtirador(id: number, data: UpdateAtiradorData) {
     });
 
     revalidatePath("/dashboard");
+    revalidatePath("/atiradores");
+
     return { success: true, data: atirador };
   } catch (error) {
     console.error("Erro ao atualizar atirador:", error);
@@ -125,6 +129,8 @@ export async function deleteAtirador(id: number) {
     }
 
     revalidatePath("/dashboard");
+    revalidatePath("/atiradores");
+
     return { success: true };
   } catch (error) {
     console.error("Erro ao deletar atirador:", error);

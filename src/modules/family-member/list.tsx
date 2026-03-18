@@ -14,9 +14,9 @@ import { FamilyMemberFilters } from "./filters";
 import { UsersRound } from "lucide-react";
 
 function getStatusBadge(member: FamilyMemberWithRelations) {
-  if (member.age < 6) {
+  if (member.age < 6 || member.payment?.status === "ISENTO") {
     return (
-      <Badge className="bg-slate-200 text-slate-700 text-xs rounded-sm font-bold uppercase tracking-wider">
+      <Badge className="bg-purple-700 text-white text-xs rounded-sm font-bold uppercase tracking-wider">
         Isento
       </Badge>
     );
@@ -55,7 +55,7 @@ type Props = {
 };
 
 export default function FamilyMembersList({ familyMembers, filters }: Props) {
-  if (!familyMembers || familyMembers.length === 0) {
+  if (!familyMembers) {
     return null;
   }
 

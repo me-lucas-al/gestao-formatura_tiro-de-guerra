@@ -33,8 +33,6 @@ import { AtiradorWithRelations } from "@packages/types";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
-type FamilyMember = { age: number; payment?: { status: string } | null };
-
 const getStatusBadge = (status?: string) => {
   switch (status) {
     case "PAID":
@@ -53,6 +51,12 @@ const getStatusBadge = (status?: string) => {
       return (
         <Badge className="bg-slate-400 text-white text-xs rounded-sm font-bold uppercase tracking-wider">
           Cancelado
+        </Badge>
+      );
+    case "ISENTO":
+      return (
+        <Badge className="bg-purple-700 text-white text-xs rounded-sm font-bold uppercase tracking-wider">
+          Isento
         </Badge>
       );
     default:
@@ -111,7 +115,8 @@ export default function AtiradorTableRow({
 
   const allFamilyPaidOrExempt = atirador.familyMembers?.every(
     (member) => {
-      return member.payment?.status === "PAID";
+      if (member.age < 6) return true;
+      return member.payment?.status === "PAID" || member.payment?.status === "ISENTO";
     },
   );
 
@@ -129,7 +134,8 @@ export default function AtiradorTableRow({
           | "PENDING"
           | "PAID"
           | "FIRST_INSTALLMENT_PAID"
-          | "CANCELED",
+          | "CANCELED"
+          | "ISENTO",
         value: parseFloat(editAtiradorValue) || 0,
         method: (editAtiradorStatus === "PAID" ||
         editAtiradorStatus === "FIRST_INSTALLMENT_PAID"
@@ -161,7 +167,8 @@ export default function AtiradorTableRow({
             | "PENDING"
             | "PAID"
             | "FIRST_INSTALLMENT_PAID"
-            | "CANCELED",
+            | "CANCELED"
+            | "ISENTO",
           value: parseFloat(editStatusValue) || 0,
           method: (editStatus === "PAID" ||
           editStatus === "FIRST_INSTALLMENT_PAID"
@@ -338,6 +345,7 @@ export default function AtiradorTableRow({
                       Primeira Parcela Paga
                     </SelectItem>
                     <SelectItem value="CANCELED">Cancelado</SelectItem>
+                    <SelectItem value="ISENTO">Isento</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -437,6 +445,7 @@ export default function AtiradorTableRow({
                       Primeira Parcela Paga
                     </SelectItem>
                     <SelectItem value="CANCELED">Cancelado</SelectItem>
+                    <SelectItem value="ISENTO">Isento</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

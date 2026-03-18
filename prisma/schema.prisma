@@ -3,11 +3,25 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "./generated/client"
+  output   = "./generated"
 }
 
 datasource formatura_db {
   provider = "postgresql"
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FIRST_INSTALLMENT_PAID
+  CANCELED
+}
+
+enum PaymentMethod {
+  PIX
+  CREDIT_CARD
+  DEBIT_CARD
+  CASH
 }
 
 model Admin {
@@ -22,59 +36,39 @@ model Admin {
 
   atiradores Atirador[]
 }
-
+model Payment {
+  id         Int   @id @default(autoincrement())
+  value     Float
+  status    PaymentStatus @default(PENDING)
+  method    PaymentMethod
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  atiradorId Int ? @unique
+  familyMemberId Int ? @unique
+  familyMember FamilyMember?
+  atirador   Atirador? @relation(fields: [atiradorId], references: [id])
+}
 model Atirador {
-  id                   Int            @id @default(autoincrement())
-  name                 String
-  number               Int?
-  year                 Int            @default(2025)
-  familyMemberQuantity Int
-  adminId              Int
-  admin                Admin          @relation(fields: [adminId], references: [id])
-  payment              Payment?       @relation(fields: [paymentId], references: [id])
-  paymentId            Int?           @unique
-  familyMembers        FamilyMember[]
-  createdAt            DateTime       @default(now())
-  updatedAt            DateTime       @updatedAt
-
-  @@unique([number, year])
+    id        Int   @id @default(autoincrement())
+    name      String
+    number    Int  
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    adminId   Int ?
+    paymentId Int ? @unique
+    payment   Payment?
+    admin     Admin ? @relation(fields: [adminId], references: [id])
+    familyMembers FamilyMember[] 
 }
 
 model FamilyMember {
-  id         Int      @id @default(autoincrement())
-  name       String
-  cpf        String?
+  id        Int   @id @default(autoincrement())
+  name      String
+  age        Int
   atiradorId Int
-  atirador   Atirador @relation(fields: [atiradorId], references: [id])
-  payment    Payment? @relation(fields: [paymentId], references: [id])
-  paymentId  Int?     @unique
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-}
-
-enum PaymentStatus {
-  PENDING
-  PAID
-  CANCELLED
-  FIRST_INSTALLMENT_PAID
-  ISENTO
-}
-
-enum PaymentMethod {
-  PIX
-  CREDIT_CARD
-  CASH
-}
-
-model Payment {
-  id        Int           @id @default(autoincrement())
-  value     Float
-  isPaid    Boolean       @default(false)
-  status    PaymentStatus @default(PENDING)
-  method    PaymentMethod?
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-
-  atirador     Atirador?
-  familyMember FamilyMember?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  paymentId Int ? @unique
+  payment   Payment? @relation(fields: [paymentId], references: [id])
+  atirador  Atirador @relation(fields: [atiradorId], references: [id])
 }

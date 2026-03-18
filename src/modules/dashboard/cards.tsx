@@ -84,7 +84,7 @@ export default function Cards({
       iconColor: "text-red-700",
     },
     {
-      title: "Nao Pagantes",
+      title: "Isentos",
       value: String(naoPagantes),
       icon: UserX,
       borderColor: "border-l-purple-700",
