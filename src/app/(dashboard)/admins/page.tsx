@@ -4,13 +4,17 @@ import { AdminService } from "@/services/admin-service";
 import { Shield } from "lucide-react";
 import { Metadata } from "next";
 
+import { getSession } from "@/actions/login";
+
 export const metadata: Metadata = {
-  title: "Gestão de Administradores | Tiro de Guerra 02-009",
+  title: "GestÃ£o de Administradores | Tiro de Guerra 02-009",
 };
 
 export default async function AdminsPage() {
   // RSC fetching the data directly from the Service
   const admins = await AdminService.getAdmins();
+  const session = await getSession();
+  const isSuperAdmin = session.success && session.data?.role === "SUPER_ADMIN";
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 p-6 md:p-8">
@@ -39,7 +43,7 @@ export default async function AdminsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Side: Create Form */}
         <section className="lg:col-span-5">
-          <CreateAdminForm />
+          <CreateAdminForm isSuperAdmin={isSuperAdmin} />
         </section>
 
         {/* Right Side: List of current Admins */}
