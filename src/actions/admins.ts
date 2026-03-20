@@ -43,28 +43,22 @@ export async function createAdmin(formData: FormData): Promise<ActionResponse> {
     };
   }
 
-  const { name, email, role, year } = validatedFields.data;
-  
-  // If email is not provided, generate a dummy one
-  const finalEmail = email || `${name.toLowerCase().replace(/[^a-z0-9]/g, "")}_${Date.now()}@tg02009.internal`;
+  const { name, role, year } = validatedFields.data;
 
   try {
-    // Check if email already exists if provided
-    if (email) {
-      const existingAdmin = await AdminService.findByEmail(email);
-      if (existingAdmin) {
-        return {
-          success: false,
-          error: "Este e-mail já está em uso por outro administrador.",
-        };
-      }
+    const existingAdmin = await AdminService.findByName(name);
+    if (existingAdmin) {
+      return {
+        success: false,
+        error: "Este nome já está em uso por outro administrador.",
+      };
     }
 
     const DEFAULT_PASSWORD = "admin123";
     const passwordHash = await bcrypt.hash(DEFAULT_PASSWORD, 10);
 
     const newAdmin = await AdminService.createAdmin(
-      { name, email: finalEmail, role, year },
+      { name, role, year },
       passwordHash,
     );
 

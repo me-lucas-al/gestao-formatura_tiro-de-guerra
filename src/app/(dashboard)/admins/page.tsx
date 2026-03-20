@@ -14,7 +14,7 @@ export default async function AdminsPage() {
   // RSC fetching the data directly from the Service
   const admins = await AdminService.getAdmins();
   const session = await getSession();
-  const isSuperAdmin = session.success && session.data?.role === "SUPER_ADMIN";
+  const isSuperAdmin = !!(session.success && session.data?.role === "SUPER_ADMIN");
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 p-6 md:p-8">
@@ -34,8 +34,8 @@ export default async function AdminsPage() {
           </div>
         </div>
         <p className="text-slate-600 max-w-2xl mt-2 text-sm">
-          Módulo restrito. Adicione e gerencie os níveis de acesso ao sistema do TG 02-009. 
-          Todas as ações são registradas.
+          Módulo restrito. Adicione e gerencie os níveis de acesso ao sistema do
+          TG 02-009. Todas as ações são registradas.
         </p>
       </header>
 
@@ -48,7 +48,11 @@ export default async function AdminsPage() {
 
         {/* Right Side: List of current Admins */}
         <section className="lg:col-span-7">
-          <AdminList admins={admins} />
+          <AdminList 
+            admins={admins} 
+            isSuperAdmin={isSuperAdmin}
+            currentAdminId={session.data?.id || 0}
+          />
         </section>
       </div>
     </div>

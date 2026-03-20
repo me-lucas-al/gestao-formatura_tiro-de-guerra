@@ -55,37 +55,20 @@ export function CreateAdminForm({ isSuperAdmin }: CreateAdminFormProps) {
       </div>
 
       <div className="p-6">
-        <form ref={formRef} action={handleSubmit} className="space-y-6">
+<form ref={formRef} action={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label
                 htmlFor="name"
                 className="text-slate-700 font-medium text-sm uppercase tracking-wide"
               >
-                Nome Completo
+                Usuário
               </Label>
               <Input
                 id="name"
                 name="name"
                 placeholder="Ex: Sgt. Silva"
                 required
-                disabled={isPending}
-                className="rounded-sm border-slate-300 focus-visible:ring-green-800"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label
-                htmlFor="email"
-                className="text-slate-700 font-medium text-sm uppercase tracking-wide"
-              >
-                E-mail Institucional (Opcional)
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="Ex: sgtsilva@tg02009.eb.mil.br"
                 disabled={isPending}
                 className="rounded-sm border-slate-300 focus-visible:ring-green-800"
               />

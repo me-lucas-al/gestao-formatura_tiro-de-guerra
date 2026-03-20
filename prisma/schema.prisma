@@ -15,6 +15,7 @@ enum PaymentStatus {
   PAID
   FIRST_INSTALLMENT_PAID
   CANCELED
+  ISENTO
 }
 
 enum PaymentMethod {
@@ -51,7 +52,8 @@ model Payment {
 model Atirador {
     id        Int   @id @default(autoincrement())
     name      String
-    number    Int  
+    number    Int
+    year      Int      @default(2025)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     adminId   Int ?

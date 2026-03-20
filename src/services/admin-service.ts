@@ -23,7 +23,6 @@ export const AdminService = {
     return db.admin.create({
       data: {
         name: input.name,
-        email: input.email || null,
         role: input.role,
         year: input.year,
         password: passwordHash,
