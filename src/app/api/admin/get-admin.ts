@@ -15,7 +15,10 @@ export async function GET() {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
     const { payload } = await jose.jwtVerify(token, secret);
 
-    const adminId = typeof payload.id === 'number' ? payload.id : parseInt(payload.id as string, 10);
+    const adminId =
+      typeof payload.id === "number"
+        ? payload.id
+        : parseInt(payload.id as string, 10);
 
     const admin = await prisma.admin.findUnique({
       where: { id: adminId },
@@ -30,7 +33,10 @@ export async function GET() {
     });
 
     if (!admin) {
-      return NextResponse.json({ error: "Administrador não encontrado" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Administrador não encontrado" },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json(admin);

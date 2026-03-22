@@ -129,7 +129,10 @@ describe("AdminService", () => {
     );
 
     expect(repository.updatePassword).toHaveBeenCalledWith(1, "hash");
-    expect(result).toEqual({ success: true, message: "Senha alterada com sucesso." });
+    expect(result).toEqual({
+      success: true,
+      message: "Senha alterada com sucesso.",
+    });
   });
 
   it("nega deleção para ator sem permissão", async () => {

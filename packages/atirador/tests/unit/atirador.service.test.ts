@@ -147,7 +147,9 @@ describe("AtiradorService", () => {
   it("soma total arrecadado de atiradores e familiares", async () => {
     const repository = createRepositoryMock();
     vi.mocked(repository.sumPaidAtiradorPaymentsByYear).mockResolvedValue(180);
-    vi.mocked(repository.sumPaidFamilyMemberPaymentsByYear).mockResolvedValue(70);
+    vi.mocked(repository.sumPaidFamilyMemberPaymentsByYear).mockResolvedValue(
+      70,
+    );
 
     const service = new AtiradorService(repository);
     const result = await service.getTotalArrecadado(2026);

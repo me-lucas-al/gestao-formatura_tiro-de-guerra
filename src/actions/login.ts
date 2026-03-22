@@ -95,7 +95,11 @@ export async function getSession() {
 export async function getAllAdmins() {
   try {
     const session = await getSession();
-    if (!session.success || !session.data || session.data.role !== "SUPER_ADMIN") {
+    if (
+      !session.success ||
+      !session.data ||
+      session.data.role !== "SUPER_ADMIN"
+    ) {
       return { error: "Acesso negado. Permissão insuficiente." };
     }
 

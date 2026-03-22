@@ -8,7 +8,9 @@ import { z } from "zod";
 export const FamilyMemberFiltersSchema = z.object({
   year: z.number().int().min(2000).max(2100),
   name: z.string().trim().min(1).optional(),
-  status: PaymentStatusSchema.or(z.literal("ALL")).or(z.literal("ISENTO")).optional(),
+  status: PaymentStatusSchema.or(z.literal("ALL"))
+    .or(z.literal("ISENTO"))
+    .optional(),
 });
 
 export const FamilyMemberPaymentSchema = PaymentSchema.extend({

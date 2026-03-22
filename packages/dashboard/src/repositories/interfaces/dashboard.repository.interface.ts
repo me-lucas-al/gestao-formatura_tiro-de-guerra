@@ -17,7 +17,9 @@ export type DashboardFamilyMemberFilters = {
 };
 
 export interface IDashboardRepository {
-  getAtiradores(filters: DashboardAtiradorFilters): Promise<DashboardAtirador[]>;
+  getAtiradores(
+    filters: DashboardAtiradorFilters,
+  ): Promise<DashboardAtirador[]>;
   getFamilyMembers(
     filters: DashboardFamilyMemberFilters,
   ): Promise<DashboardFamilyMember[]>;

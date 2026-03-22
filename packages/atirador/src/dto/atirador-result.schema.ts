@@ -26,7 +26,9 @@ export const TotalArrecadadoSuccessSchema = z.object({
 });
 
 export type AtiradorErrorResult = z.infer<typeof AtiradorErrorSchema>;
-export type AtiradorListSuccessResult = z.infer<typeof AtiradorListSuccessSchema>;
+export type AtiradorListSuccessResult = z.infer<
+  typeof AtiradorListSuccessSchema
+>;
 export type AtiradorMutationSuccessResult = z.infer<
   typeof AtiradorMutationSuccessSchema
 >;

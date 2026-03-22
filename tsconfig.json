@@ -35,7 +35,9 @@
       "@gestao_formatura/payment/*": ["./packages/payment/src/*"],
       "@gestao_formatura/dashboard": ["./packages/dashboard/src"],
       "@gestao_formatura/dashboard/*": ["./packages/dashboard/src/*"],
-      "@gestao_formatura/prisma/generated": ["./packages/shared/src/generated/client"],
+      "@gestao_formatura/prisma/generated": [
+        "./packages/shared/src/generated/client"
+      ],
       "@prisma/client": ["./packages/shared/src/generated/client"]
     }
   },

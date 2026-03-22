@@ -2,7 +2,10 @@
 
 import { prismaClient } from "@gestao_formatura/shared";
 import { cookies } from "next/headers";
-import { AuthAdminCredentialsSchema, AuthAdminSessionSchema } from "../../dto/auth-admin.schema";
+import {
+  AuthAdminCredentialsSchema,
+  AuthAdminSessionSchema,
+} from "../../dto/auth-admin.schema";
 import type { IAuthRepository } from "../interfaces/auth.repository.interface";
 
 export const findByName: IAuthRepository["findByName"] = async (name) => {
@@ -30,16 +33,17 @@ export const findById: IAuthRepository["findById"] = async (id) => {
   return AuthAdminSessionSchema.parse(admin);
 };
 
-export const readSessionToken: IAuthRepository["readSessionToken"] = async () => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+export const readSessionToken: IAuthRepository["readSessionToken"] =
+  async () => {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
 
-  if (!token) {
-    return null;
-  }
+    if (!token) {
+      return null;
+    }
 
-  return token;
-};
+    return token;
+  };
 
 export const writeSessionToken: IAuthRepository["writeSessionToken"] = async (
   token,

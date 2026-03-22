@@ -48,7 +48,9 @@ test("family-member: abrir painel de familiares", async ({ page }) => {
   await firstAtiradorRow.click();
 
   await expect(page.getByText(/Familiares de/i).first()).toBeVisible();
-  await expect(page.getByRole("button", { name: "Adicionar" }).first()).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Adicionar" }).first(),
+  ).toBeVisible();
 });
 
 test("payment: abrir modal de status", async ({ page }) => {

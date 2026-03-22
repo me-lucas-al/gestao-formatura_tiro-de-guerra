@@ -59,7 +59,9 @@ export class PaymentService {
   }
 
   async update(input: UpdatePaymentInput): Promise<PaymentMutationResult> {
-    const existingPayment = await this.paymentRepository.findPaymentById(input.id);
+    const existingPayment = await this.paymentRepository.findPaymentById(
+      input.id,
+    );
 
     if (!existingPayment) {
       return PaymentErrorSchema.parse({
@@ -82,7 +84,9 @@ export class PaymentService {
     }
 
     if (input.atiradorId !== undefined && input.atiradorId !== null) {
-      const atirador = await this.paymentRepository.findAtiradorById(input.atiradorId);
+      const atirador = await this.paymentRepository.findAtiradorById(
+        input.atiradorId,
+      );
 
       if (!atirador) {
         return PaymentErrorSchema.parse({

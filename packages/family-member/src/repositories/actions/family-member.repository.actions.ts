@@ -35,7 +35,10 @@ export const findMany: IFamilyMemberRepository["findMany"] = async (
   }
 
   if (filters.paymentStatus && filters.includeNullPayment) {
-    where.OR = [{ payment: null }, { payment: { status: filters.paymentStatus } }];
+    where.OR = [
+      { payment: null },
+      { payment: { status: filters.paymentStatus } },
+    ];
   }
 
   if (filters.paymentStatus && !filters.includeNullPayment) {

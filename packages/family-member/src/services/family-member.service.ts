@@ -15,18 +15,21 @@ import type {
 } from "../repositories/interfaces/family-member.repository.interface";
 
 export class FamilyMemberService {
-  constructor(private readonly familyMemberRepository: IFamilyMemberRepository) {}
+  constructor(
+    private readonly familyMemberRepository: IFamilyMemberRepository,
+  ) {}
 
-  async findMany(filters: FamilyMemberFilters): Promise<ListFamilyMemberResult> {
+  async findMany(
+    filters: FamilyMemberFilters,
+  ): Promise<ListFamilyMemberResult> {
     const repositoryFilters: FamilyMemberRepositoryFilters = {
       year: filters.year,
       name: filters.name,
     };
 
     if (!filters.status || filters.status === "ALL") {
-      const familyMembers = await this.familyMemberRepository.findMany(
-        repositoryFilters,
-      );
+      const familyMembers =
+        await this.familyMemberRepository.findMany(repositoryFilters);
 
       return { success: true, data: familyMembers };
     }
@@ -76,7 +79,8 @@ export class FamilyMemberService {
   }
 
   async deleteWithPayment(id: number): Promise<DeleteFamilyMemberResult> {
-    const familyMember = await this.familyMemberRepository.findByIdWithPayment(id);
+    const familyMember =
+      await this.familyMemberRepository.findByIdWithPayment(id);
 
     if (!familyMember) {
       return FamilyMemberErrorSchema.parse({
@@ -86,7 +90,9 @@ export class FamilyMemberService {
     }
 
     if (familyMember.payment?.id) {
-      await this.familyMemberRepository.deletePaymentById(familyMember.payment.id);
+      await this.familyMemberRepository.deletePaymentById(
+        familyMember.payment.id,
+      );
     }
 
     await this.familyMemberRepository.deleteById(id);

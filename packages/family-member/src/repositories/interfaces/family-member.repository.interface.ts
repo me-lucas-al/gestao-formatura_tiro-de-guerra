@@ -14,7 +14,9 @@ export type FamilyMemberRepositoryFilters = {
 };
 
 export interface IFamilyMemberRepository {
-  findMany(filters: FamilyMemberRepositoryFilters): Promise<FamilyMemberEntity[]>;
+  findMany(
+    filters: FamilyMemberRepositoryFilters,
+  ): Promise<FamilyMemberEntity[]>;
   create(input: CreateFamilyMemberInput): Promise<FamilyMemberEntity>;
   update(input: UpdateFamilyMemberInput): Promise<FamilyMemberEntity>;
   findByIdWithPayment(id: number): Promise<FamilyMemberEntity | null>;
