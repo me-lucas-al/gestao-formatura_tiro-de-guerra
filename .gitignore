@@ -28,6 +28,9 @@ dist/
 .cache/
 .swc/
 
+# Turborepo cache
+.turbo/
+
 # Vercel
 .vercel
 
@@ -100,6 +103,8 @@ playwright-report/
 # Miscellaneous
 # ===========================
 *.tsbuildinfo
+packages/*/dist/
+packages/*/tsconfig.tsbuildinfo
 next-env.d.ts
 
 # prisma

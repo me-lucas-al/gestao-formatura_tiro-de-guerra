@@ -28,7 +28,10 @@ export function CreateAdminForm({ isSuperAdmin }: CreateAdminFormProps) {
       const result = await createAdmin(formData);
 
       if (result.success) {
-        toast.success(result.message ?? "Administrador criado com sucesso! Senha padrão: admin123");
+        toast.success(
+          result.message ??
+            "Administrador criado com sucesso! Senha padrão: admin123",
+        );
         formRef.current?.reset();
       } else {
         const fieldMsg = result.fieldErrors
@@ -55,7 +58,7 @@ export function CreateAdminForm({ isSuperAdmin }: CreateAdminFormProps) {
       </div>
 
       <div className="p-6">
-<form ref={formRef} action={handleSubmit} className="space-y-6">
+        <form ref={formRef} action={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label
@@ -95,7 +98,9 @@ export function CreateAdminForm({ isSuperAdmin }: CreateAdminFormProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="ADMIN">Administrador Padrão</SelectItem>
-                    <SelectItem value="SUPER_ADMIN">Administrador Chefe</SelectItem>
+                    <SelectItem value="SUPER_ADMIN">
+                      Administrador Chefe
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>

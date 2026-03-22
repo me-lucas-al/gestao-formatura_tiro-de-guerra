@@ -1,0 +1,26 @@
+{
+  "$schema": "https://turbo.build/json-schema.json",
+  "globalDependencies": ["tsconfig.json", ".env*", "**/.env*"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["test", "^test", "^build"],
+      "outputs": [".next/**", "dist/**"],
+      "cache": true
+    },
+    "test": {
+      "dependsOn": ["^test"],
+      "cache": true,
+      "outputs": ["coverage/**"]
+    },
+    "lint": {
+      "cache": true
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "generate": {
+      "cache": false
+    }
+  }
+}

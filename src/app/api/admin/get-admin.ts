@@ -19,6 +19,7 @@ export async function GET() {
 
     const admin = await prisma.admin.findUnique({
       where: { id: adminId },
+      omit: { password: true },
       include: {
         atiradores: {
           include: {
@@ -32,9 +33,7 @@ export async function GET() {
       return NextResponse.json({ error: "Administrador não encontrado" }, { status: 404 });
     }
 
-    const { password: _, ...adminWithoutPassword } = admin;
-
-    return NextResponse.json(adminWithoutPassword);
+    return NextResponse.json(admin);
   } catch (err) {
     console.error("Erro de autenticação:", err);
     return NextResponse.json({ error: "Token inválido" }, { status: 401 });

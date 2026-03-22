@@ -1,0 +1,24 @@
+{
+  "name": "@gestao_formatura/shared",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
+    "@prisma/adapter-neon": "^7.5.0",
+    "@prisma/client": "7.4.2",
+    "ws": "^8.19.0",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}

@@ -15,6 +15,18 @@ export type ActionResponse<T = unknown> = {
   data?: T;
 };
 
+function buildAdminEmail(name: string, year: number): string {
+  const normalizedName = name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ".")
+    .replace(/^\.|\.$/g, "")
+    .slice(0, 40);
+
+  return `${normalizedName}.${Date.now()}.${year}@tg02009.eb.mil.br`;
+}
+
 export async function createAdmin(formData: FormData): Promise<ActionResponse> {
   const auth = await requireAuth();
   if (!auth.success) {
@@ -56,10 +68,12 @@ export async function createAdmin(formData: FormData): Promise<ActionResponse> {
 
     const DEFAULT_PASSWORD = "admin123";
     const passwordHash = await bcrypt.hash(DEFAULT_PASSWORD, 10);
+    const adminEmail = buildAdminEmail(name, year);
 
     const newAdmin = await AdminService.createAdmin(
       { name, role, year },
       passwordHash,
+      adminEmail,
     );
 
     revalidatePath("/dashboard/admins");
@@ -79,16 +93,18 @@ export async function createAdmin(formData: FormData): Promise<ActionResponse> {
   }
 }
 
-const ChangePasswordSchema = z.object({
-  newPassword: z
-    .string()
-    .min(6, "A senha deve ter pelo menos 6 caracteres.")
-    .max(100, "Senha muito longa."),
-  confirmPassword: z.string(),
-}).refine((d) => d.newPassword === d.confirmPassword, {
-  message: "As senhas não coincidem.",
-  path: ["confirmPassword"],
-});
+const ChangePasswordSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(6, "A senha deve ter pelo menos 6 caracteres.")
+      .max(100, "Senha muito longa."),
+    confirmPassword: z.string(),
+  })
+  .refine((d) => d.newPassword === d.confirmPassword, {
+    message: "As senhas não coincidem.",
+    path: ["confirmPassword"],
+  });
 
 export async function changeAdminPassword(
   adminId: number,
@@ -102,7 +118,10 @@ export async function changeAdminPassword(
     return { success: false, error: "Acesso negado." };
   }
 
-  const validated = ChangePasswordSchema.safeParse({ newPassword, confirmPassword });
+  const validated = ChangePasswordSchema.safeParse({
+    newPassword,
+    confirmPassword,
+  });
   if (!validated.success) {
     const firstIssue = validated.error.flatten().fieldErrors;
     const msg =
@@ -119,7 +138,10 @@ export async function changeAdminPassword(
     return { success: true, message: "Senha alterada com sucesso." };
   } catch (error) {
     console.error("Erro ao alterar senha:", error);
-    return { success: false, error: "Erro ao alterar a senha. Tente novamente." };
+    return {
+      success: false,
+      error: "Erro ao alterar a senha. Tente novamente.",
+    };
   }
 }
 
@@ -137,6 +159,9 @@ export async function deleteAdmin(adminId: number): Promise<ActionResponse> {
     return { success: true, message: "Administrador removido com sucesso." };
   } catch (error) {
     console.error("Erro ao remover administrador:", error);
-    return { success: false, error: "Erro ao remover o administrador. Tente novamente." };
+    return {
+      success: false,
+      error: "Erro ao remover o administrador. Tente novamente.",
+    };
   }
 }

@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "./generated"
+  output   = "../packages/shared/src/generated"
 }
 
 datasource formatura_db {
@@ -37,40 +37,42 @@ model Admin {
 
   atiradores Atirador[]
 }
+
 model Payment {
-  id         Int   @id @default(autoincrement())
-  value     Float
-  status    PaymentStatus @default(PENDING)
-  method    PaymentMethod
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  atiradorId Int ? @unique
-  familyMemberId Int ? @unique
-  familyMember FamilyMember?
-  atirador   Atirador? @relation(fields: [atiradorId], references: [id])
+  id             Int           @id @default(autoincrement())
+  value          Float
+  status         PaymentStatus @default(PENDING)
+  method         PaymentMethod
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  atiradorId     Int?          @unique
+  familyMemberId Int?          @unique
+  familyMember   FamilyMember?
+  atirador       Atirador?     @relation(fields: [atiradorId], references: [id])
 }
+
 model Atirador {
-    id        Int   @id @default(autoincrement())
-    name      String
-    number    Int
-    year      Int      @default(2025)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    adminId   Int ?
-    paymentId Int ? @unique
-    payment   Payment?
-    admin     Admin ? @relation(fields: [adminId], references: [id])
-    familyMembers FamilyMember[] 
+  id            Int            @id @default(autoincrement())
+  name          String
+  number        Int
+  year          Int            @default(2025)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  adminId       Int?
+  paymentId     Int?           @unique
+  payment       Payment?
+  admin         Admin?         @relation(fields: [adminId], references: [id])
+  familyMembers FamilyMember[]
 }
 
 model FamilyMember {
-  id        Int   @id @default(autoincrement())
-  name      String
+  id         Int      @id @default(autoincrement())
+  name       String
   age        Int
   atiradorId Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  paymentId Int ? @unique
-  payment   Payment? @relation(fields: [paymentId], references: [id])
-  atirador  Atirador @relation(fields: [atiradorId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  paymentId  Int?     @unique
+  payment    Payment? @relation(fields: [paymentId], references: [id])
+  atirador   Atirador @relation(fields: [atiradorId], references: [id])
 }

@@ -19,10 +19,18 @@ export const AdminService = {
   async createAdmin(
     input: CreateAdminInput,
     passwordHash: string,
+    email: string,
   ): Promise<AdminEntity> {
+    const latestAdmin = await db.admin.findFirst({
+      orderBy: { id: "desc" },
+      select: { id: true },
+    });
+
     return db.admin.create({
       data: {
+        id: (latestAdmin?.id ?? 0) + 1,
         name: input.name,
+        email,
         role: input.role,
         year: input.year,
         password: passwordHash,

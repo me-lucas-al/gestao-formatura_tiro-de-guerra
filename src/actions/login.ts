@@ -7,6 +7,8 @@ import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 import { redirect } from "next/navigation";
 
+const jwtSecret = process.env.JWT_SECRET ?? "dev-jwt-secret";
+
 export async function loginAdmin({
   adminName,
   password,
@@ -28,7 +30,7 @@ export async function loginAdmin({
 
     const token = jwt.sign(
       { id: admin.id, name: admin.name, role: admin.role, year: admin.year },
-      process.env.JWT_SECRET!,
+      jwtSecret,
       {
         expiresIn: "1d",
       },
@@ -37,7 +39,7 @@ export async function loginAdmin({
     const cookieStore = await cookies();
     cookieStore.set("token", token, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
     });
@@ -61,7 +63,7 @@ export async function getSession() {
       };
     }
 
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET as string);
+    const secret = new TextEncoder().encode(jwtSecret);
     const { payload } = await jwtVerify(token, secret);
     const adminId = payload.id ? Number(payload.id) : undefined;
 

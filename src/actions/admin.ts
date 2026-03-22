@@ -75,14 +75,14 @@ export async function getSession() {
       where: {
         id: adminId,
       },
+      omit: { password: true },
     });
 
     if (!admin) {
       return { error: "Administrador não encontrado.", status: 404 };
     }
 
-    const { password, ...adminData } = admin;
-    return { success: true, data: adminData };
+    return { success: true, data: admin };
   } catch (error) {
     console.error("Erro de verificação da sessão:", error);
     return { error: "Sessão inválida ou expirada.", status: 401 };
