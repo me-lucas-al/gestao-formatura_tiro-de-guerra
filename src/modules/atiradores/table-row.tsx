@@ -32,6 +32,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { AtiradorWithRelations } from "@packages/types";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const getStatusBadge = (status?: string) => {
   switch (status) {
@@ -70,8 +71,12 @@ const getStatusBadge = (status?: string) => {
 
 export default function AtiradorTableRow({
   atirador,
+  isSelected,
+  onSelectChange,
 }: {
   atirador: AtiradorWithRelations;
+  isSelected: boolean;
+  onSelectChange: (id: number, checked: boolean) => void;
 }) {
   const { expandedRowId, toggleRow } = useDashboard();
   const { confirm } = useConfirm();
@@ -193,6 +198,13 @@ export default function AtiradorTableRow({
       className="cursor-pointer hover:bg-slate-50 transition-colors"
       onClick={() => toggleRow(atiradorId)}
     >
+      <TableCell onClick={(event) => event.stopPropagation()} className="w-[48px]">
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={(value) => onSelectChange(atiradorId, value === true)}
+          aria-label={`Selecionar atirador ${atirador.name}`}
+        />
+      </TableCell>
       <TableCell className="font-medium flex items-center gap-2">
         {isExpanded ? (
           <ChevronDown className="h-4 w-4 text-green-900" />

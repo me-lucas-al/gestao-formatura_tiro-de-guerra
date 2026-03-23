@@ -4,6 +4,7 @@ import { DashboardProvider } from "@/contexts/dashboard-context";
 import FamilyMembersList from "@/modules/family-member/list";
 import { getAtiradores, getTotalArrecadado } from "@/actions/atiradores";
 import { getFamilyMembers } from "@/actions/family-members";
+import { DashboardSectionTabs } from "@/modules/dashboard/section-tabs";
 
 export default async function Dashboard({
   searchParams,
@@ -41,6 +42,7 @@ export default async function Dashboard({
           familyMembers={familyMembers}
           totalArrecadado={totalArrecadado}
         />
+        <DashboardSectionTabs />
         <AtiradoresList atiradores={atiradores} filters={atiradorFilters} />
         <FamilyMembersList familyMembers={familyMembers} filters={familyFilters} />
       </div>

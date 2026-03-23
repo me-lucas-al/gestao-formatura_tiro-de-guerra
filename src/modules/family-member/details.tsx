@@ -189,7 +189,7 @@ export default function FamilyMembersDetail({
 
   return (
     <TableRow>
-      <TableCell colSpan={4}>
+      <TableCell colSpan={5}>
         <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm">
           <div className="flex justify-between items-center mb-3">
             <h4 className="font-semibold text-sm uppercase tracking-wide text-slate-700">

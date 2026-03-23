@@ -21,8 +21,13 @@ export class AdminService {
     passwordHash: string,
     actor: AdminActor,
   ): Promise<CreateAdminResult> {
-    const enforcedRole = actor.role === "SUPER_ADMIN" ? input.role : "ADMIN";
-    const enforcedYear = actor.role === "SUPER_ADMIN" ? input.year : actor.year;
+    if (actor.role !== "SUPER_ADMIN") {
+      return AdminErrorSchema.parse({
+        success: false,
+        error: "Acesso negado. Apenas superadmins podem criar administradores.",
+      });
+    }
+
     const existingAdmin = await this.adminRepository.findByName(input.name);
 
     if (existingAdmin) {
@@ -34,8 +39,8 @@ export class AdminService {
 
     const admin = await this.adminRepository.create({
       name: input.name,
-      role: enforcedRole,
-      year: enforcedYear,
+      role: input.role,
+      year: input.year,
       passwordHash,
     });
 
