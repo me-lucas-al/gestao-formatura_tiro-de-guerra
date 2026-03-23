@@ -1,149 +1,218 @@
-# 🎯 Gestão de Pagamentos - Formatura Tiro de Guerra
+# 🎯 Gestão de Formatura — Tiro de Guerra
 
-Este projeto é um **sistema completo de gestão financeira** desenvolvido para a **formatura do Tiro de Guerra**, oferecendo uma plataforma centralizada e eficiente para controle das arrecadações.
-
-Destinado aos **administradores do evento**, o sistema permite acompanhar o status de pagamentos dos **atiradores e seus familiares**, garantindo **transparência, segurança e praticidade** em todo o processo de gestão.
+Sistema de gestão financeira da formatura do Tiro de Guerra. Permite controlar pagamentos de atiradores e familiares, com painel administrativo, autenticação por função (ADMIN / SUPERADMIN) e relatórios de arrecadação.
 
 ---
 
-## ✨ Principais Funcionalidades
+## ✨ Funcionalidades
 
-* **🔐 Autenticação Segura:**
-  Acesso restrito a administradores via **JWT (JSON Web Tokens)**, garantindo que apenas usuários autorizados possam visualizar e manipular os dados.
-
-* **📊 Dashboard Intuitivo:**
-  Um painel de controle moderno com indicadores essenciais:
-
-  * Total de atiradores e familiares cadastrados.
-  * Quantidade de pagamentos confirmados e pendentes.
-  * Progresso geral da arrecadação.
-
-* **🎖️ Gestão de Atiradores:**
-  Listagem completa e organizada dos atiradores, com visualização de nome, número e status de pagamento.
-
-* **👨‍👩‍👦 Familiares Associados:**
-  Exibição detalhada dos familiares vinculados a cada atirador e seus respectivos status de pagamento.
-
-* **💰 Controle de Pagamentos:**
-  Registro e atualização de pagamentos com suporte a múltiplos métodos (PIX, Cartão, etc.) e diferentes status (Pendente, Pago, Cancelado).
-
-* **⚙️ API Robusta:**
-  Endpoints seguros para CRUD completo de atiradores, familiares e pagamentos, com validação e autenticação integradas.
+| Módulo | Descrição |
+|---|---|
+| 🔐 Autenticação | Login com JWT + cookies HttpOnly; dois níveis de acesso (ADMIN e SUPERADMIN) |
+| 📊 Dashboard | Painel com cards de resumo, navegação por seção e listagens de Atiradores e Familiares |
+| 🎖️ Atiradores | CRUD completo, filtros por nome/número/status e seleção múltipla para exclusão |
+| 👨‍👩‍👦 Familiares | Listagem vinculada ao atirador, filtros, exclusão individual e em massa |
+| 💰 Pagamentos | Status (Pendente, Pago, 1ª Parcela, Cancelado, Isento) e métodos (PIX, Cartão, Dinheiro) |
+| 🛡️ Admins | SUPERADMIN cria e gerencia admins; admins comuns só alteram a própria senha |
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 🏗️ Arquitetura
 
-O projeto foi construído com foco em **performance, segurança e escalabilidade**, utilizando um stack moderno e consolidado.
+O projeto segue **Domain-Driven Design (DDD)** com **Clean Architecture** e **Hexagonal Architecture**, organizado em um monorepo **pnpm workspaces + Turborepo**.
 
-### **Frontend**
+```
+gestao-formatura_tiro-de-guerra/
+│
+├── src/                          # Camada Next.js (UI + Server Actions)
+│   ├── app/                      # Rotas App Router
+│   ├── actions/                  # Server Actions (entrypoint → Controller)
+│   ├── modules/                  # Componentes por domínio (UI)
+│   ├── services/                 # Serviços de infraestrutura Next.js
+│   ├── schemas/                  # Zod schemas compartilhados na camada Next
+│   ├── contexts/                 # React Contexts (estado de UI)
+│   ├── hooks/                    # React hooks reutilizáveis
+│   └── lib/                      # Auth, helpers
+│
+├── packages/                     # Pacotes de domínio (@gestao_formatura/*)
+│   ├── admin/                    # Domínio Admin
+│   │   └── src/
+│   │       ├── controllers/      # Ponto de entrada; delega para o Service
+│   │       ├── services/         # Lógica de negócio pura (sem dependência Next.js)
+│   │       ├── repositories/
+│   │       │   ├── interfaces/   # Contratos (IAdminRepository)
+│   │       │   └── actions/      # Implementações via Server Actions
+│   │       └── dto/              # Zod schemas + tipos inferidos
+│   │   └── tests/
+│   │       ├── unit/             # Vitest
+│   │       └── e2e/              # Playwright
+│   │
+│   ├── atirador/                 # Domínio Atirador
+│   ├── family-member/            # Domínio Familiar
+│   ├── payment/                  # Domínio Pagamento
+│   ├── auth/                     # Domínio Autenticação
+│   ├── dashboard/                # Domínio Dashboard
+│   ├── shared/                   # Prisma client + interfaces base
+│   ├── schemas/                  # Zod schemas compartilhados entre pacotes
+│   └── types/                    # Tipos TypeScript compartilhados
+│
+├── prisma/
+│   ├── schema.prisma
+│   ├── migrations/
+│   └── seed.ts
+│
+└── tests/
+    └── e2e/                      # Testes E2E Playwright (root)
+```
 
-* [Next.js](https://nextjs.org/) (App Router)
-* [React](https://react.dev/)
-* [React Query](https://tanstack.com/query/latest) — gerenciamento de estado assíncrono.
-* [Tailwind CSS](https://tailwindcss.com/) — estilização rápida e responsiva.
-* [Shadcn/UI](https://ui.shadcn.com/) — biblioteca de componentes acessíveis e elegantes.
+### Fluxo de uma request
 
-### **Backend**
+```
+Browser → Server Action (src/actions/) → Controller (packages/*/controllers/)
+       → Service (packages/*/services/) → Repository Interface
+       → Repository Action (packages/*/repositories/actions/) → Prisma → PostgreSQL
+```
 
-* [Next.js API Routes](https://nextjs.org/docs/app/building-your-application/routing/route-handlers)
-* [Prisma ORM](https://www.prisma.io/) — abstração segura e tipada do banco de dados.
+### Regras de camada
 
-### **Banco de Dados**
-
-* [PostgreSQL](https://www.postgresql.org/)
-
-### **Autenticação e Segurança**
-
-* [JWT (JSON Web Tokens)](https://jwt.io/) — autenticação baseada em tokens.
-* **Cookies HttpOnly** — armazenamento seguro do token de sessão.
-* [bcrypt](https://www.npmjs.com/package/bcrypt) — hashing de senhas.
-
-### **Validação e Tipagem**
-
-* [Zod](https://zod.dev/) — validação robusta e schemas tipados.
+- **Controllers**: nunca contêm lógica de negócio; delegam imediatamente ao Service.
+- **Services**: lógica de negócio pura; sem imports de `next/*`; recebem dependências por injeção.
+- **Repositories**: a interface define o contrato; a implementação usa Prisma via Server Actions.
+- **DTOs**: 100% Zod — tipos sempre inferidos com `z.infer<>`, nunca escritos manualmente.
 
 ---
 
-## 🚀 Como Executar o Projeto
+## 🛠️ Stack
 
-Siga as instruções abaixo para rodar o projeto em seu ambiente de desenvolvimento.
-
-### **Pré-requisitos**
-
-* [Node.js](https://nodejs.org/) (versão 18 ou superior)
-* [pnpm](https://pnpm.io/) (recomendado) ou `npm` / `yarn`
+| Camada | Tecnologia |
+|---|---|
+| Framework | Next.js 15 (App Router, Turbopack) |
+| Linguagem | TypeScript 5 |
+| UI | React 19, Tailwind CSS 4, Shadcn/UI, Lucide React |
+| ORM | Prisma 7 + adaptador Neon (suporte a PostgreSQL serverless) |
+| Banco | PostgreSQL (local ou [Neon](https://neon.tech)) |
+| Autenticação | JWT (jsonwebtoken) + cookies HttpOnly + bcrypt |
+| Validação | Zod 4 |
+| Monorepo | pnpm workspaces + Turborepo |
+| Testes | Vitest (unitários) — Playwright (E2E) |
+| Toasts | Sonner |
 
 ---
 
-### **1. Clone o repositório**
+## 🚀 Setup Local
+
+### Pré-requisitos
+
+- [Node.js 20+](https://nodejs.org/)
+- [pnpm 10+](https://pnpm.io/installation) — `npm i -g pnpm`
+- PostgreSQL local **ou** conta gratuita em [Neon](https://neon.tech)
+
+---
+
+### 1. Clone o repositório
 
 ```bash
 git clone https://github.com/seu-usuario/gestao-formatura_tiro-de-guerra.git
 cd gestao-formatura_tiro-de-guerra
 ```
 
-### **2. Instale as dependências**
+### 2. Instale as dependências
 
 ```bash
 pnpm install
 ```
 
-### **3. Configure as variáveis de ambiente**
+### 3. Configure as variáveis de ambiente
 
-Crie um arquivo `.env` na raiz do projeto e defina as seguintes variáveis:
+Crie o arquivo `prisma/.env` (usado pelo Prisma):
 
 ```env
-DATABASE_URL="postgresql://user:password@localhost:5432/mydatabase?schema=public"
-JWT_SECRET="sua-chave-secreta-para-jwt"
+# prisma/.env
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/formatura-db"
+JWT_SECRET="sua-chave-secreta-longa-e-aleatoria"
+ADMIN_PASSWORD="admin123"
+```
+
+> **Neon (serverless):** use a connection string do painel Neon com `?sslmode=require`.
+
+### 4. Rode as migrations
+
+```bash
+pnpm migrate dev
+```
+
+> Isso aplica todas as migrations do `prisma/migrations/` e gera o Prisma Client.
+
+### 5. (Opcional) Popule o banco com dados de exemplo
+
+```bash
+pnpm seed
+```
+
+Cria admins, atiradores e familiares de exemplo. O SUPERADMIN padrão criado pelo seed é documentado no próprio arquivo `prisma/seed.ts`.
+
+### 6. Gere o Prisma Client (se necessário)
+
+```bash
+pnpm generate
+```
+
+### 7. Inicie o servidor de desenvolvimento
+
+```bash
+pnpm dev
+```
+
+Acesse: **[http://localhost:3000](http://localhost:3000)**
+
+---
+
+## 🧪 Testes
+
+```bash
+# Testes unitários do pacote admin (Vitest)
+pnpm --filter @gestao_formatura/admin test
+
+# Testes E2E (Playwright) — requer servidor rodando na porta 3000
+pnpm exec playwright test
+
+# Build de produção (valida TypeScript + todos os pacotes)
+pnpm build
 ```
 
 ---
 
-### **5. Execute as migrações**
+## ⚙️ Scripts disponíveis
 
-Cria as tabelas no banco conforme o schema Prisma:
-
-```bash
-pnpx prisma migrate dev
-```
-
-### **6. (Opcional) Popule o banco com dados iniciais**
-
-Execute o script de *seed* para criar administradores e atiradores de exemplo:
-
-```bash
-pnpm run seed
-```
-
-### **7. Inicie o servidor de desenvolvimento**
-
-```bash
-pnpm run dev
-```
-
-Acesse a aplicação em:
-👉 [http://localhost:3000](http://localhost:3000)
+| Comando | Descrição |
+|---|---|
+| `pnpm dev` | Servidor de desenvolvimento (Turbopack) |
+| `pnpm build` | Build de produção (Turborepo → Next.js) |
+| `pnpm start` | Inicia a build de produção |
+| `pnpm migrate dev` | Cria e aplica uma nova migration |
+| `pnpm generate` | Gera o Prisma Client |
+| `pnpm seed` | Popula o banco com dados iniciais |
+| `pnpm studio` | Abre o Prisma Studio |
+| `pnpm docker-compose` | Sobe o container PostgreSQL local |
 
 ---
 
-## 🧩 Estrutura do Projeto
+## 👤 Papéis de acesso
 
-```
-📦 gestao-formatura_tiro-de-guerra
-├── 📁 src
-│   ├── 📁 app           # Páginas e rotas (App Router)
-│   ├── 📁 components    # Componentes reutilizáveis
-│   ├── 📁 lib           # Configurações e helpers
-│   ├── 📁 prisma        # Schema e migrações do banco
-│   └── 📁 api           # Rotas e controladores do backend
-├── .env                 # Configurações das variáveis de ambiente
-├── docker-compose.yml   # Configuração do container PostgreSQL
-├── package.json
-└── README.md
-```
+| Papel | Pode fazer |
+|---|---|
+| `ADMIN` | Ver dashboard, gerenciar atiradores e familiares, alterar a própria senha |
+| `SUPER_ADMIN` | Tudo acima + criar admins, promover admins a superadmin, remover admins |
 
-````
-DATABASE_URL="postgresql://postgres:lucas@localhost:5432/formatura-db"
-JWT_SECRET="d85c8f971d4c3beb56e92e2a6ea414baa79cbe36abf116cf4a6bf428ddb55ff1e9e648610b10fcaab68d9fe66a082ae85721303e51f1797fa63a5e2c9efe6a1d"
-````
+A senha padrão criada pelo seed/cadastro é `admin123`. Altere no primeiro acesso.
+
+---
+
+## 📐 Convenções de código
+
+- **Sem `else`**: use early returns.
+- **Sem tipos manuais para schemas**: sempre `z.infer<typeof Schema>`.
+- **Sem lógica nos controllers**: delegar 100% ao service.
+- **Sem Prisma nos services**: apenas interfaces de repositório.
+- **Nomes descritivos**: sem abreviações.
+- Funções com no máximo 20 linhas; classes/arquivos com responsabilidade única.
