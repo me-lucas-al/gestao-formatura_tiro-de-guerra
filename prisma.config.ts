@@ -8,6 +8,6 @@ export default defineConfig({
   },
   migrations: {
     path: "prisma/migrations",
-    seed: "pnpm run seed",
+    seed: "pnpx prisma db seed",
   },
 });

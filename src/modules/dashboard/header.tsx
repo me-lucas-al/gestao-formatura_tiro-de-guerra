@@ -10,15 +10,18 @@ import { Shield, Settings, LogOut } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { logout } from "@/actions/login";
+import { YearSelector } from "./year-selector";
 
 export default function DashboardHeader({
   atiradores,
   familyMembers,
   totalArrecadado,
+  availableYears,
 }: {
   atiradores: AtiradorWithRelations[];
   familyMembers: FamilyMemberWithRelations[];
   totalArrecadado: number;
+  availableYears?: number[];
 }) {
   const { admin } = useSession();
 
@@ -78,6 +81,20 @@ export default function DashboardHeader({
           </span>
           . Gerencie atiradores, familiares e pagamentos da formatura.
         </p>
+
+        {admin?.role === "SUPER_ADMIN" &&
+          !!availableYears &&
+          availableYears.length > 0 && (
+            <div className="mt-4 p-3 bg-green-50 border border-green-100 rounded-sm inline-flex items-center gap-4">
+              <YearSelector
+                availableYears={availableYears}
+                currentYear={admin.activeYear ?? new Date().getFullYear()}
+              />
+              <p className="text-xs text-green-800 italic">
+                * Você está visualizando os dados da turma selecionada.
+              </p>
+            </div>
+          )}
       </header>
 
       <Cards

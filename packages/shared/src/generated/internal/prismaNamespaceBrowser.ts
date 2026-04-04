@@ -92,6 +92,7 @@ export const PaymentScalarFieldEnum = {
   value: 'value',
   status: 'status',
   method: 'method',
+  year: 'year',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   atiradorId: 'atiradorId',
@@ -120,6 +121,7 @@ export const FamilyMemberScalarFieldEnum = {
   name: 'name',
   age: 'age',
   atiradorId: 'atiradorId',
+  year: 'year',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   paymentId: 'paymentId'

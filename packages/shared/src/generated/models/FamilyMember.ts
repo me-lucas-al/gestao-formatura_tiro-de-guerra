@@ -30,6 +30,7 @@ export type FamilyMemberAvgAggregateOutputType = {
   id: number | null
   age: number | null
   atiradorId: number | null
+  year: number | null
   paymentId: number | null
 }
 
@@ -37,6 +38,7 @@ export type FamilyMemberSumAggregateOutputType = {
   id: number | null
   age: number | null
   atiradorId: number | null
+  year: number | null
   paymentId: number | null
 }
 
@@ -45,6 +47,7 @@ export type FamilyMemberMinAggregateOutputType = {
   name: string | null
   age: number | null
   atiradorId: number | null
+  year: number | null
   createdAt: Date | null
   updatedAt: Date | null
   paymentId: number | null
@@ -55,6 +58,7 @@ export type FamilyMemberMaxAggregateOutputType = {
   name: string | null
   age: number | null
   atiradorId: number | null
+  year: number | null
   createdAt: Date | null
   updatedAt: Date | null
   paymentId: number | null
@@ -65,6 +69,7 @@ export type FamilyMemberCountAggregateOutputType = {
   name: number
   age: number
   atiradorId: number
+  year: number
   createdAt: number
   updatedAt: number
   paymentId: number
@@ -76,6 +81,7 @@ export type FamilyMemberAvgAggregateInputType = {
   id?: true
   age?: true
   atiradorId?: true
+  year?: true
   paymentId?: true
 }
 
@@ -83,6 +89,7 @@ export type FamilyMemberSumAggregateInputType = {
   id?: true
   age?: true
   atiradorId?: true
+  year?: true
   paymentId?: true
 }
 
@@ -91,6 +98,7 @@ export type FamilyMemberMinAggregateInputType = {
   name?: true
   age?: true
   atiradorId?: true
+  year?: true
   createdAt?: true
   updatedAt?: true
   paymentId?: true
@@ -101,6 +109,7 @@ export type FamilyMemberMaxAggregateInputType = {
   name?: true
   age?: true
   atiradorId?: true
+  year?: true
   createdAt?: true
   updatedAt?: true
   paymentId?: true
@@ -111,6 +120,7 @@ export type FamilyMemberCountAggregateInputType = {
   name?: true
   age?: true
   atiradorId?: true
+  year?: true
   createdAt?: true
   updatedAt?: true
   paymentId?: true
@@ -208,6 +218,7 @@ export type FamilyMemberGroupByOutputType = {
   name: string
   age: number
   atiradorId: number
+  year: number
   createdAt: Date
   updatedAt: Date
   paymentId: number | null
@@ -241,6 +252,7 @@ export type FamilyMemberWhereInput = {
   name?: Prisma.StringFilter<"FamilyMember"> | string
   age?: Prisma.IntFilter<"FamilyMember"> | number
   atiradorId?: Prisma.IntFilter<"FamilyMember"> | number
+  year?: Prisma.IntFilter<"FamilyMember"> | number
   createdAt?: Prisma.DateTimeFilter<"FamilyMember"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FamilyMember"> | Date | string
   paymentId?: Prisma.IntNullableFilter<"FamilyMember"> | number | null
@@ -253,6 +265,7 @@ export type FamilyMemberOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   age?: Prisma.SortOrder
   atiradorId?: Prisma.SortOrder
+  year?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   paymentId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -269,6 +282,7 @@ export type FamilyMemberWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"FamilyMember"> | string
   age?: Prisma.IntFilter<"FamilyMember"> | number
   atiradorId?: Prisma.IntFilter<"FamilyMember"> | number
+  year?: Prisma.IntFilter<"FamilyMember"> | number
   createdAt?: Prisma.DateTimeFilter<"FamilyMember"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FamilyMember"> | Date | string
   payment?: Prisma.XOR<Prisma.PaymentNullableScalarRelationFilter, Prisma.PaymentWhereInput> | null
@@ -280,6 +294,7 @@ export type FamilyMemberOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   age?: Prisma.SortOrder
   atiradorId?: Prisma.SortOrder
+  year?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   paymentId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -298,6 +313,7 @@ export type FamilyMemberScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"FamilyMember"> | string
   age?: Prisma.IntWithAggregatesFilter<"FamilyMember"> | number
   atiradorId?: Prisma.IntWithAggregatesFilter<"FamilyMember"> | number
+  year?: Prisma.IntWithAggregatesFilter<"FamilyMember"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"FamilyMember"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"FamilyMember"> | Date | string
   paymentId?: Prisma.IntNullableWithAggregatesFilter<"FamilyMember"> | number | null
@@ -306,6 +322,7 @@ export type FamilyMemberScalarWhereWithAggregatesInput = {
 export type FamilyMemberCreateInput = {
   name: string
   age: number
+  year?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   payment?: Prisma.PaymentCreateNestedOneWithoutFamilyMemberInput
@@ -317,6 +334,7 @@ export type FamilyMemberUncheckedCreateInput = {
   name: string
   age: number
   atiradorId: number
+  year?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   paymentId?: number | null
@@ -325,6 +343,7 @@ export type FamilyMemberUncheckedCreateInput = {
 export type FamilyMemberUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
+  year?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payment?: Prisma.PaymentUpdateOneWithoutFamilyMemberNestedInput
@@ -336,6 +355,7 @@ export type FamilyMemberUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   atiradorId?: Prisma.IntFieldUpdateOperationsInput | number
+  year?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -346,6 +366,7 @@ export type FamilyMemberCreateManyInput = {
   name: string
   age: number
   atiradorId: number
+  year?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   paymentId?: number | null
@@ -354,6 +375,7 @@ export type FamilyMemberCreateManyInput = {
 export type FamilyMemberUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
+  year?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -363,6 +385,7 @@ export type FamilyMemberUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   atiradorId?: Prisma.IntFieldUpdateOperationsInput | number
+  year?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -388,6 +411,7 @@ export type FamilyMemberCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   age?: Prisma.SortOrder
   atiradorId?: Prisma.SortOrder
+  year?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   paymentId?: Prisma.SortOrder
@@ -397,6 +421,7 @@ export type FamilyMemberAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   age?: Prisma.SortOrder
   atiradorId?: Prisma.SortOrder
+  year?: Prisma.SortOrder
   paymentId?: Prisma.SortOrder
 }
 
@@ -405,6 +430,7 @@ export type FamilyMemberMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   age?: Prisma.SortOrder
   atiradorId?: Prisma.SortOrder
+  year?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   paymentId?: Prisma.SortOrder
@@ -415,6 +441,7 @@ export type FamilyMemberMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   age?: Prisma.SortOrder
   atiradorId?: Prisma.SortOrder
+  year?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   paymentId?: Prisma.SortOrder
@@ -424,6 +451,7 @@ export type FamilyMemberSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   age?: Prisma.SortOrder
   atiradorId?: Prisma.SortOrder
+  year?: Prisma.SortOrder
   paymentId?: Prisma.SortOrder
 }
 
@@ -504,6 +532,7 @@ export type FamilyMemberUncheckedUpdateManyWithoutAtiradorNestedInput = {
 export type FamilyMemberCreateWithoutPaymentInput = {
   name: string
   age: number
+  year?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   atirador: Prisma.AtiradorCreateNestedOneWithoutFamilyMembersInput
@@ -514,6 +543,7 @@ export type FamilyMemberUncheckedCreateWithoutPaymentInput = {
   name: string
   age: number
   atiradorId: number
+  year?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -537,6 +567,7 @@ export type FamilyMemberUpdateToOneWithWhereWithoutPaymentInput = {
 export type FamilyMemberUpdateWithoutPaymentInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
+  year?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atirador?: Prisma.AtiradorUpdateOneRequiredWithoutFamilyMembersNestedInput
@@ -547,6 +578,7 @@ export type FamilyMemberUncheckedUpdateWithoutPaymentInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
   atiradorId?: Prisma.IntFieldUpdateOperationsInput | number
+  year?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -554,6 +586,7 @@ export type FamilyMemberUncheckedUpdateWithoutPaymentInput = {
 export type FamilyMemberCreateWithoutAtiradorInput = {
   name: string
   age: number
+  year?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   payment?: Prisma.PaymentCreateNestedOneWithoutFamilyMemberInput
@@ -563,6 +596,7 @@ export type FamilyMemberUncheckedCreateWithoutAtiradorInput = {
   id?: number
   name: string
   age: number
+  year?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   paymentId?: number | null
@@ -602,6 +636,7 @@ export type FamilyMemberScalarWhereInput = {
   name?: Prisma.StringFilter<"FamilyMember"> | string
   age?: Prisma.IntFilter<"FamilyMember"> | number
   atiradorId?: Prisma.IntFilter<"FamilyMember"> | number
+  year?: Prisma.IntFilter<"FamilyMember"> | number
   createdAt?: Prisma.DateTimeFilter<"FamilyMember"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FamilyMember"> | Date | string
   paymentId?: Prisma.IntNullableFilter<"FamilyMember"> | number | null
@@ -611,6 +646,7 @@ export type FamilyMemberCreateManyAtiradorInput = {
   id?: number
   name: string
   age: number
+  year?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   paymentId?: number | null
@@ -619,6 +655,7 @@ export type FamilyMemberCreateManyAtiradorInput = {
 export type FamilyMemberUpdateWithoutAtiradorInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
+  year?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payment?: Prisma.PaymentUpdateOneWithoutFamilyMemberNestedInput
@@ -628,6 +665,7 @@ export type FamilyMemberUncheckedUpdateWithoutAtiradorInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
+  year?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -637,6 +675,7 @@ export type FamilyMemberUncheckedUpdateManyWithoutAtiradorInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   age?: Prisma.IntFieldUpdateOperationsInput | number
+  year?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -649,6 +688,7 @@ export type FamilyMemberSelect<ExtArgs extends runtime.Types.Extensions.Internal
   name?: boolean
   age?: boolean
   atiradorId?: boolean
+  year?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   paymentId?: boolean
@@ -661,6 +701,7 @@ export type FamilyMemberSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   name?: boolean
   age?: boolean
   atiradorId?: boolean
+  year?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   paymentId?: boolean
@@ -673,6 +714,7 @@ export type FamilyMemberSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   name?: boolean
   age?: boolean
   atiradorId?: boolean
+  year?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   paymentId?: boolean
@@ -685,12 +727,13 @@ export type FamilyMemberSelectScalar = {
   name?: boolean
   age?: boolean
   atiradorId?: boolean
+  year?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   paymentId?: boolean
 }
 
-export type FamilyMemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "age" | "atiradorId" | "createdAt" | "updatedAt" | "paymentId", ExtArgs["result"]["familyMember"]>
+export type FamilyMemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "age" | "atiradorId" | "year" | "createdAt" | "updatedAt" | "paymentId", ExtArgs["result"]["familyMember"]>
 export type FamilyMemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   payment?: boolean | Prisma.FamilyMember$paymentArgs<ExtArgs>
   atirador?: boolean | Prisma.AtiradorDefaultArgs<ExtArgs>
@@ -715,6 +758,7 @@ export type $FamilyMemberPayload<ExtArgs extends runtime.Types.Extensions.Intern
     name: string
     age: number
     atiradorId: number
+    year: number
     createdAt: Date
     updatedAt: Date
     paymentId: number | null
@@ -1147,6 +1191,7 @@ export interface FamilyMemberFieldRefs {
   readonly name: Prisma.FieldRef<"FamilyMember", 'String'>
   readonly age: Prisma.FieldRef<"FamilyMember", 'Int'>
   readonly atiradorId: Prisma.FieldRef<"FamilyMember", 'Int'>
+  readonly year: Prisma.FieldRef<"FamilyMember", 'Int'>
   readonly createdAt: Prisma.FieldRef<"FamilyMember", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"FamilyMember", 'DateTime'>
   readonly paymentId: Prisma.FieldRef<"FamilyMember", 'Int'>

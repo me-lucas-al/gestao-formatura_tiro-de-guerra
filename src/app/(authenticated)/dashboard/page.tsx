@@ -5,12 +5,19 @@ import FamilyMembersList from "@/modules/family-member/list";
 import { getAtiradores, getTotalArrecadado } from "@/actions/atiradores";
 import { getFamilyMembers } from "@/actions/family-members";
 import { DashboardSectionTabs } from "@/modules/dashboard/section-tabs";
+import { getSession } from "@/actions/admin";
+import { getAvailableYears } from "@/actions/year";
 
 export default async function Dashboard({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const session = await getSession();
+  const availableYears =
+    session.success && session.data?.role === "SUPER_ADMIN"
+      ? await getAvailableYears()
+      : [];
   const params = await searchParams;
 
   const atiradorFilters = {
@@ -41,6 +48,7 @@ export default async function Dashboard({
           atiradores={atiradores}
           familyMembers={familyMembers}
           totalArrecadado={totalArrecadado}
+          availableYears={availableYears}
         />
         <DashboardSectionTabs />
         <AtiradoresList atiradores={atiradores} filters={atiradorFilters} />

@@ -10,9 +10,13 @@ export const CreateAdminSchema = z.object({
     .number()
     .int("O ano deve ser um número inteiro.")
     .min(2020, "Ano inválido.")
-    .max(2100, "Ano inválido."),
+    .max(2100, "Ano inválido.")
+    .optional()
+    .nullable(),
 });
 
 export type CreateAdminInput = z.infer<typeof CreateAdminSchema>;
 
-export type AdminEntity = Omit<Admin, "password">;
+export type AdminEntity = Omit<Admin, "password"> & {
+  activeYear?: number;
+};

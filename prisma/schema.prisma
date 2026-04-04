@@ -27,15 +27,18 @@ enum PaymentMethod {
 
 model Admin {
   id        Int      @id @default(autoincrement())
-  name      String   @unique
-  email     String?  @unique
+  name      String
+  email     String?
   password  String
   role      String   @default("ADMIN")
-  year      Int      @default(2025)
+  year      Int?     @default(2025)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   atiradores Atirador[]
+
+  @@unique([name, year])
+  @@unique([email, year])
 }
 
 model Payment {
@@ -43,6 +46,7 @@ model Payment {
   value          Float
   status         PaymentStatus @default(PENDING)
   method         PaymentMethod
+  year           Int           @default(2025)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   atiradorId     Int?          @unique
@@ -63,6 +67,8 @@ model Atirador {
   payment       Payment?
   admin         Admin?         @relation(fields: [adminId], references: [id])
   familyMembers FamilyMember[]
+
+  @@unique([number, year])
 }
 
 model FamilyMember {
@@ -70,6 +76,7 @@ model FamilyMember {
   name       String
   age        Int
   atiradorId Int
+  year       Int      @default(2025)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   paymentId  Int?     @unique

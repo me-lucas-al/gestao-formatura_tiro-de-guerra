@@ -207,7 +207,7 @@ export type AdminGroupByOutputType = {
   email: string | null
   password: string
   role: string
-  year: number
+  year: number | null
   createdAt: Date
   updatedAt: Date
   _count: AdminCountAggregateOutputType | null
@@ -241,7 +241,7 @@ export type AdminWhereInput = {
   email?: Prisma.StringNullableFilter<"Admin"> | string | null
   password?: Prisma.StringFilter<"Admin"> | string
   role?: Prisma.StringFilter<"Admin"> | string
-  year?: Prisma.IntFilter<"Admin"> | number
+  year?: Prisma.IntNullableFilter<"Admin"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Admin"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Admin"> | Date | string
   atiradores?: Prisma.AtiradorListRelationFilter
@@ -253,7 +253,7 @@ export type AdminOrderByWithRelationInput = {
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   password?: Prisma.SortOrder
   role?: Prisma.SortOrder
-  year?: Prisma.SortOrder
+  year?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   atiradores?: Prisma.AtiradorOrderByRelationAggregateInput
@@ -261,18 +261,20 @@ export type AdminOrderByWithRelationInput = {
 
 export type AdminWhereUniqueInput = Prisma.AtLeast<{
   id?: number
-  name?: string
-  email?: string
+  name_year?: Prisma.AdminNameYearCompoundUniqueInput
+  email_year?: Prisma.AdminEmailYearCompoundUniqueInput
   AND?: Prisma.AdminWhereInput | Prisma.AdminWhereInput[]
   OR?: Prisma.AdminWhereInput[]
   NOT?: Prisma.AdminWhereInput | Prisma.AdminWhereInput[]
+  name?: Prisma.StringFilter<"Admin"> | string
+  email?: Prisma.StringNullableFilter<"Admin"> | string | null
   password?: Prisma.StringFilter<"Admin"> | string
   role?: Prisma.StringFilter<"Admin"> | string
-  year?: Prisma.IntFilter<"Admin"> | number
+  year?: Prisma.IntNullableFilter<"Admin"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Admin"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Admin"> | Date | string
   atiradores?: Prisma.AtiradorListRelationFilter
-}, "id" | "name" | "email">
+}, "id" | "name_year" | "email_year">
 
 export type AdminOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -280,7 +282,7 @@ export type AdminOrderByWithAggregationInput = {
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   password?: Prisma.SortOrder
   role?: Prisma.SortOrder
-  year?: Prisma.SortOrder
+  year?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.AdminCountOrderByAggregateInput
@@ -299,7 +301,7 @@ export type AdminScalarWhereWithAggregatesInput = {
   email?: Prisma.StringNullableWithAggregatesFilter<"Admin"> | string | null
   password?: Prisma.StringWithAggregatesFilter<"Admin"> | string
   role?: Prisma.StringWithAggregatesFilter<"Admin"> | string
-  year?: Prisma.IntWithAggregatesFilter<"Admin"> | number
+  year?: Prisma.IntNullableWithAggregatesFilter<"Admin"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Admin"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Admin"> | Date | string
 }
@@ -309,7 +311,7 @@ export type AdminCreateInput = {
   email?: string | null
   password: string
   role?: string
-  year?: number
+  year?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   atiradores?: Prisma.AtiradorCreateNestedManyWithoutAdminInput
@@ -321,7 +323,7 @@ export type AdminUncheckedCreateInput = {
   email?: string | null
   password: string
   role?: string
-  year?: number
+  year?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   atiradores?: Prisma.AtiradorUncheckedCreateNestedManyWithoutAdminInput
@@ -332,7 +334,7 @@ export type AdminUpdateInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
-  year?: Prisma.IntFieldUpdateOperationsInput | number
+  year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atiradores?: Prisma.AtiradorUpdateManyWithoutAdminNestedInput
@@ -344,7 +346,7 @@ export type AdminUncheckedUpdateInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
-  year?: Prisma.IntFieldUpdateOperationsInput | number
+  year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   atiradores?: Prisma.AtiradorUncheckedUpdateManyWithoutAdminNestedInput
@@ -356,7 +358,7 @@ export type AdminCreateManyInput = {
   email?: string | null
   password: string
   role?: string
-  year?: number
+  year?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -366,7 +368,7 @@ export type AdminUpdateManyMutationInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
-  year?: Prisma.IntFieldUpdateOperationsInput | number
+  year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -377,9 +379,19 @@ export type AdminUncheckedUpdateManyInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
-  year?: Prisma.IntFieldUpdateOperationsInput | number
+  year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AdminNameYearCompoundUniqueInput = {
+  name: string
+  year: number
+}
+
+export type AdminEmailYearCompoundUniqueInput = {
+  email: string
+  year: number
 }
 
 export type AdminCountOrderByAggregateInput = {
@@ -438,8 +450,8 @@ export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
   increment?: number
   decrement?: number
   multiply?: number
@@ -448,6 +460,14 @@ export type IntFieldUpdateOperationsInput = {
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type AdminCreateNestedOneWithoutAtiradoresInput = {
@@ -471,7 +491,7 @@ export type AdminCreateWithoutAtiradoresInput = {
   email?: string | null
   password: string
   role?: string
-  year?: number
+  year?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -482,7 +502,7 @@ export type AdminUncheckedCreateWithoutAtiradoresInput = {
   email?: string | null
   password: string
   role?: string
-  year?: number
+  year?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -508,7 +528,7 @@ export type AdminUpdateWithoutAtiradoresInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
-  year?: Prisma.IntFieldUpdateOperationsInput | number
+  year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -519,7 +539,7 @@ export type AdminUncheckedUpdateWithoutAtiradoresInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
-  year?: Prisma.IntFieldUpdateOperationsInput | number
+  year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -620,7 +640,7 @@ export type $AdminPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     email: string | null
     password: string
     role: string
-    year: number
+    year: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["admin"]>

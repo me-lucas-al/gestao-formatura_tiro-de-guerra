@@ -278,6 +278,7 @@ export type AtiradorOrderByWithRelationInput = {
 export type AtiradorWhereUniqueInput = Prisma.AtLeast<{
   id?: number
   paymentId?: number
+  number_year?: Prisma.AtiradorNumberYearCompoundUniqueInput
   AND?: Prisma.AtiradorWhereInput | Prisma.AtiradorWhereInput[]
   OR?: Prisma.AtiradorWhereInput[]
   NOT?: Prisma.AtiradorWhereInput | Prisma.AtiradorWhereInput[]
@@ -290,7 +291,7 @@ export type AtiradorWhereUniqueInput = Prisma.AtLeast<{
   payment?: Prisma.XOR<Prisma.PaymentNullableScalarRelationFilter, Prisma.PaymentWhereInput> | null
   admin?: Prisma.XOR<Prisma.AdminNullableScalarRelationFilter, Prisma.AdminWhereInput> | null
   familyMembers?: Prisma.FamilyMemberListRelationFilter
-}, "id" | "paymentId">
+}, "id" | "paymentId" | "number_year">
 
 export type AtiradorOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -416,6 +417,11 @@ export type AtiradorOrderByRelationAggregateInput = {
 export type AtiradorNullableScalarRelationFilter = {
   is?: Prisma.AtiradorWhereInput | null
   isNot?: Prisma.AtiradorWhereInput | null
+}
+
+export type AtiradorNumberYearCompoundUniqueInput = {
+  number: number
+  year: number
 }
 
 export type AtiradorCountOrderByAggregateInput = {

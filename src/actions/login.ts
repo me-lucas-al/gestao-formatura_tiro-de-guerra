@@ -85,7 +85,30 @@ export async function getSession() {
       return { error: "Administrador não encontrado.", status: 404 };
     }
 
-    return { success: true, data: admin };
+    // Se o Admin for SUPER_ADMIN, verificamos se há um ano selecionado no cookie
+    let activeYear = admin.year;
+
+    if (admin.role === "SUPER_ADMIN") {
+      const activeYearCookie = cookieStore.get("active_year")?.value;
+      if (activeYearCookie) {
+        activeYear = Number(activeYearCookie);
+      } else {
+        // Busca o ano mais recente com dados
+        const latestAtirador = await db.atirador.findFirst({
+          orderBy: { year: "desc" },
+          select: { year: true },
+        });
+        activeYear = latestAtirador?.year ?? new Date().getFullYear();
+      }
+    }
+
+    return {
+      success: true,
+      data: {
+        ...admin,
+        activeYear,
+      },
+    };
   } catch (error) {
     console.error("Erro de verificação da sessão:", error);
     return { error: "Sessão inválida ou expirada.", status: 401 };
