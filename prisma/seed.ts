@@ -1,47 +1,10 @@
-process.env.IS_SEEDING = "true";
 import * as dotenv from "dotenv";
 
-// 1. Injeta as variáveis de ambiente ANTES da conexão do banco
+// 1. Injeta as variáveis de ambiente ANTES de qualquer uso de process.env
+// Com ESM os imports são hoisted, então o dotenv.config deve vir antes do uso das envs
 dotenv.config({ path: "./prisma/.env" });
-import bcrypt from "bcrypt";
 
-const adminData = [
-  {
-    id: 1,
-    name: "victor",
-    password: bcrypt.hashSync(process.env.ADMIN_PASSWORD!, 10),
-    role: "ADMIN",
-    year: 2025,
-  },
-  {
-    id: 2,
-    name: "de_souza",
-    password: bcrypt.hashSync(process.env.ADMIN_PASSWORD!, 10),
-    role: "ADMIN",
-    year: 2025,
-  },
-  {
-    id: 3,
-    name: "assis",
-    password: bcrypt.hashSync(process.env.ADMIN_PASSWORD!, 10),
-    role: "ADMIN",
-    year: 2025,
-  },
-  {
-    id: 4,
-    name: "muniz",
-    password: bcrypt.hashSync(process.env.ADMIN_PASSWORD!, 10),
-    role: "ADMIN",
-    year: 2025,
-  },
-  {
-    id: 5,
-    name: "sargento",
-    password: bcrypt.hashSync(process.env.ADMIN_PASSWORD!, 10),
-    role: "SUPER_ADMIN",
-    year: null,
-  },
-];
+process.env.IS_SEEDING = "true";
 
 const atiradorData = [
   { id: 1, number: 1, name: "Adriano", adminId: 1, year: 2025 },
@@ -147,8 +110,25 @@ const atiradorData = [
 
 const main = async () => {
   // 2. Importação dinâmica após a configuração do dotenv
-  // Ajuste o caminho "@/lib/prisma" se for diferente no seu projeto
-  const { db } = await import("@/lib/prisma");
+  const { db } = await import("../src/lib/prisma.ts");
+  const bcrypt = (await import("bcrypt")).default;
+
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  if (!adminPassword) {
+    throw new Error(
+      "ADMIN_PASSWORD não definido. Verifique o arquivo prisma/.env"
+    );
+  }
+
+  const hashedPassword = bcrypt.hashSync(adminPassword, 10);
+
+  const adminData = [
+    { id: 1, name: "victor", password: hashedPassword, role: "ADMIN", year: 2025 },
+    { id: 2, name: "de_souza", password: hashedPassword, role: "ADMIN", year: 2025 },
+    { id: 3, name: "assis", password: hashedPassword, role: "ADMIN", year: 2025 },
+    { id: 4, name: "muniz", password: hashedPassword, role: "ADMIN", year: 2025 },
+    { id: 5, name: "sargento", password: hashedPassword, role: "SUPER_ADMIN", year: null },
+  ];
 
   console.log("Iniciando seed de Administradores e Atiradores...");
 
@@ -178,6 +158,6 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    const { db } = await import("@/lib/prisma");
+    const { db } = await import("../src/lib/prisma.ts");
     await db.$disconnect();
   });
