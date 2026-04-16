@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { s, UsersRound } from "lucide-react";
+import { Users, UsersRound } from "lucide-react";
 
 const SECTIONS = [
   { id: "section-atiradores", label: "Atiradores", Icon: Users },
