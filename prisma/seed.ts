@@ -1,10 +1,7 @@
-import * as dotenv from "dotenv";
-
-// 1. Injeta as variáveis de ambiente ANTES de qualquer uso de process.env
-// Com ESM os imports são hoisted, então o dotenv.config deve vir antes do uso das envs
-dotenv.config({ path: "./prisma/.env" });
-
 process.env.IS_SEEDING = "true";
+import * as dotenv from "dotenv";
+dotenv.config({ path: "./prisma/.env" });
+import bcrypt from "bcrypt";
 
 const atiradorData = [
   { id: 1, number: 1, name: "Adriano", adminId: 1, year: 2025 },
@@ -109,44 +106,31 @@ const atiradorData = [
 ];
 
 const main = async () => {
-  // 2. Importação dinâmica após a configuração do dotenv
-  const { db } = await import("../src/lib/prisma.ts");
-  const bcrypt = (await import("bcrypt")).default;
+  const { db } = await import("@/lib/prisma");
 
-  const adminPassword = process.env.ADMIN_PASSWORD;
-  if (!adminPassword) {
-    throw new Error(
-      "ADMIN_PASSWORD não definido. Verifique o arquivo prisma/.env"
-    );
-  }
-
-  const hashedPassword = bcrypt.hashSync(adminPassword, 10);
+  // ✅ Hash feito aqui, APÓS o dotenv já ter carregado as variáveis
+  const hashedPassword = bcrypt.hashSync(process.env.ADMIN_PASSWORD!, 10);
 
   const adminData = [
-    { id: 1, name: "victor", password: hashedPassword, role: "ADMIN", year: 2025 },
-    { id: 2, name: "de_souza", password: hashedPassword, role: "ADMIN", year: 2025 },
-    { id: 3, name: "assis", password: hashedPassword, role: "ADMIN", year: 2025 },
-    { id: 4, name: "muniz", password: hashedPassword, role: "ADMIN", year: 2025 },
-    { id: 5, name: "sargento", password: hashedPassword, role: "SUPER_ADMIN", year: null },
+    { id: 1, name: "victor",   password: hashedPassword, role: "ADMIN",       year: 2025 },
+    { id: 2, name: "de_souza", password: hashedPassword, role: "ADMIN",       year: 2025 },
+    { id: 3, name: "assis",    password: hashedPassword, role: "ADMIN",       year: 2025 },
+    { id: 4, name: "muniz",    password: hashedPassword, role: "ADMIN",       year: 2025 },
+    { id: 5, name: "sargento", password: hashedPassword, role: "SUPER_ADMIN", year: null  },
   ];
 
   console.log("Iniciando seed de Administradores e Atiradores...");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await db.$transaction(async (tx: any) => {
-    // Apaga os dados antigos para não duplicar (Ordem importa: filhos primeiro)
     await tx.atirador.deleteMany();
     await tx.admin.deleteMany();
 
     console.log("-> Criando Administradores...");
-    await tx.admin.createMany({
-      data: adminData,
-    });
+    await tx.admin.createMany({ data: adminData });
 
     console.log("-> Criando Atiradores...");
-    await tx.atirador.createMany({
-      data: atiradorData,
-    });
+    await tx.atirador.createMany({ data: atiradorData });
   });
 
   console.log("✅ Seed finalizado com sucesso!");
@@ -158,6 +142,6 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    const { db } = await import("../src/lib/prisma.ts");
+    const { db } = await import("@/lib/prisma");
     await db.$disconnect();
   });
