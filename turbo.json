@@ -1,11 +1,10 @@
 {
-  "$schema": "https://turbo.build/json-schema.json",
+  "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["tsconfig.json", ".env*", "**/.env*"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
-      "cache": true
+      "outputs": [".next/**", "!.next/cache/**"]
     },
     "test": {
       "dependsOn": ["^test"],
