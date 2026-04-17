@@ -18,5 +18,5 @@ export const CreateAdminSchema = z.object({
 export type CreateAdminInput = z.infer<typeof CreateAdminSchema>;
 
 export type AdminEntity = Omit<Admin, "password"> & {
-  activeYear?: number;
+  activeYear?: number | null;
 };

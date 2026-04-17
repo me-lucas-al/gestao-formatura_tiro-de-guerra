@@ -21,7 +21,7 @@ export async function getFamilyMembers(filters?: {
     if (!auth.success) return { error: auth.error };
 
     const familyMembers = await FamilyMemberService.findMany({
-      year: auth.admin.year,
+      year: auth.admin.year ?? new Date().getFullYear(),
       name: filters?.name || undefined,
       status: filters?.status || undefined,
     });

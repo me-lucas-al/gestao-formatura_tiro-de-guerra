@@ -3,14 +3,14 @@ import type { CreateAdminInput, AdminEntity } from "@/schemas/admin";
 
 export const AdminService = {
   async findByEmail(email: string): Promise<AdminEntity | null> {
-    return db.admin.findUnique({
+    return db.admin.findFirst({
       where: { email },
       omit: { password: true },
     });
   },
 
   async findByName(name: string): Promise<AdminEntity | null> {
-    return db.admin.findUnique({
+    return db.admin.findFirst({
       where: { name },
       omit: { password: true },
     });
