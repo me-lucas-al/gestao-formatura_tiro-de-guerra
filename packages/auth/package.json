@@ -17,7 +17,7 @@
     "bcrypt": "^6.0.0",
     "jose": "^6.2.1",
     "jsonwebtoken": "^9.0.2",
-    "next": "15.5.4",
+    "next": "15.5.9",
     "zod": "^4.1.11"
   },
   "devDependencies": {
