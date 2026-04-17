@@ -27,20 +27,22 @@ export default function Cards({
     return null;
   }
 
-  const pagos = atiradores.filter((a) => a.payment?.status === "PAID").length;
+  const pagos = (atiradores.filter((a) => a.payment?.status === "PAID").length) + (familyMembers.filter((fm) => fm.payment?.status === "PAID").length);
 
   const totalAtiradores = atiradores.length;
   const totalFamilyMembers = familyMembers ? familyMembers.length : 0;
-  const pendentes = atiradores.filter(
-    (a) => a.payment?.status === "PENDING",
-  ).length;
-  const primeiraParcelaPaga = atiradores.filter(
-    (a) => a.payment?.status === "FIRST_INSTALLMENT_PAID",
-  ).length;
 
-  const naoPagantes = familyMembers
+  const pendentes = (atiradores.filter(
+    (a) => a.payment?.status === "PENDING",
+  ).length) + (familyMembers.filter((fm) => fm.payment?.status === "PENDING").length);
+
+  const primeiraParcelaPaga = (atiradores.filter(
+    (a) => a.payment?.status === "FIRST_INSTALLMENT_PAID",
+  ).length) + (familyMembers.filter((fm) => fm.payment?.status === "FIRST_INSTALLMENT_PAID").length);
+
+  const naoPagantes = (familyMembers
     ? familyMembers.filter((fm) => fm.payment?.status === "ISENTO").length
-    : 0;
+    : 0) + (atiradores.filter((a) => a.payment?.status === "ISENTO").length);
 
   const cards = [
     {
