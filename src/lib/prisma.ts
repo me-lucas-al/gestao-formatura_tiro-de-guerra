@@ -2,9 +2,15 @@ import { PrismaClient } from "@gestao_formatura/prisma/generated";
 import { PrismaNeon } from "@prisma/adapter-neon";
 import { neonConfig } from "@neondatabase/serverless";
 import ws from "ws";
-import { tenantContext } from "./tenant-context";
 
 neonConfig.webSocketConstructor = ws;
+
+interface PrismaArguments {
+  where?: Record<string, unknown>;
+  data?: Record<string, unknown> | Record<string, unknown>[];
+  create?: Record<string, unknown>;
+  update?: Record<string, unknown>;
+}
 
 const connectionString = `${process.env.DATABASE_URL}`;
 const adapter = new PrismaNeon({ connectionString });
@@ -46,7 +52,7 @@ const db = prisma.$extends({
 
           if (token) {
             const jwt = await import("jsonwebtoken");
-            const decoded = jwt.default.decode(token) as any;
+            const decoded = jwt.default.decode(token) as { role?: string; year?: number };
             role = decoded?.role;
             year = decoded?.year;
 
@@ -55,15 +61,11 @@ const db = prisma.$extends({
               if (activeYearCookie) {
                 year = Number(activeYearCookie);
               } else {
-                // For SUPER_ADMIN without active_year cookie, we don't apply the filter here
-                // to avoid recursion if we were to query the DB for the latest year.
-                // The getSession action will handle setting the default activeYear.
                 return query(args);
               }
             }
           }
-        } catch (e) {
-          // Not in a request context (e.g., seeding, build)
+        } catch {
           return query(args);
         }
 
@@ -71,7 +73,8 @@ const db = prisma.$extends({
           return query(args);
         }
 
-        // Apply year filter to 'where' clauses
+        const typedArgs = args as PrismaArguments;
+
         if (
           [
             "findFirst",
@@ -86,33 +89,30 @@ const db = prisma.$extends({
             "groupBy",
           ].includes(operation)
         ) {
-          (args as any).where = { ...(args as any).where, year };
+          typedArgs.where = { ...typedArgs.where, year };
         }
 
-        // Inject year into 'create' data
         if (operation === "create") {
-          (args as any).data = { ...(args as any).data, year };
+          typedArgs.data = { ...(typedArgs.data as Record<string, unknown>), year };
         }
 
-        // Inject year into 'createMany' data
         if (operation === "createMany") {
-          if (Array.isArray((args as any).data)) {
-            (args as any).data = (args as any).data.map((item: any) => ({
+          if (Array.isArray(typedArgs.data)) {
+            typedArgs.data = typedArgs.data.map((item) => ({
               ...item,
               year,
             }));
-          } else if ((args as any).data) {
-            (args as any).data = { ...(args as any).data, year };
+          } else if (typedArgs.data) {
+            typedArgs.data = { ...(typedArgs.data as Record<string, unknown>), year };
           }
         }
 
-        // Inject year into 'upsert' data
         if (operation === "upsert") {
-          (args as any).create = { ...(args as any).create, year };
-          (args as any).update = { ...(args as any).update, year };
+          typedArgs.create = { ...typedArgs.create, year };
+          typedArgs.update = { ...typedArgs.update, year };
         }
 
-        return query(args);
+        return query(typedArgs);
       },
     },
   },

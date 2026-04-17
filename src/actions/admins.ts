@@ -36,7 +36,6 @@ export async function createAdmin(formData: FormData): Promise<ActionResponse> {
   const isSuperAdmin = auth.admin.role === "SUPER_ADMIN";
   const data = Object.fromEntries(formData.entries());
 
-  // Non-SUPER_ADMIN: year inherited from own year, role locked to ADMIN
   const yearValue = isSuperAdmin ? data.year : String(auth.admin.year);
   const roleValue = isSuperAdmin ? data.role : "ADMIN";
 
@@ -66,9 +65,15 @@ export async function createAdmin(formData: FormData): Promise<ActionResponse> {
       };
     }
 
-    const DEFAULT_PASSWORD = "admin123";
+    const DEFAULT_PASSWORD = process.env.ADMIN_PASSWORD;
+    if (!DEFAULT_PASSWORD) {
+      return {
+        success: false,
+        error: "Senha padrão não configurada.",
+      };
+    }
     const passwordHash = await bcrypt.hash(DEFAULT_PASSWORD, 10);
-    const adminEmail = buildAdminEmail(name, year);
+    const adminEmail = buildAdminEmail(name, year ?? new Date().getFullYear());
 
     const newAdmin = await AdminService.createAdmin(
       { name, role, year },

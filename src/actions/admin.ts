@@ -64,8 +64,6 @@ export async function getSession() {
     const { payload } = await jwtVerify(token, secret);
 
     const adminId = payload.id ? Number(payload.id) : undefined;
-    const role = payload.role as string | undefined;
-    const tokenYear = payload.year as number | null | undefined;
 
     if (!adminId) {
       return {
