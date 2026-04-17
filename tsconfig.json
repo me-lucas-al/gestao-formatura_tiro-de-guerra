@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -11,7 +15,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "plugins": [
       {
@@ -19,28 +23,70 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@packages/*": ["./packages/*"],
-      "@gestao_formatura/shared": ["./packages/shared/src"],
-      "@gestao_formatura/shared/*": ["./packages/shared/src/*"],
-      "@gestao_formatura/auth": ["./packages/auth/src"],
-      "@gestao_formatura/auth/*": ["./packages/auth/src/*"],
-      "@gestao_formatura/admin": ["./packages/admin/src"],
-      "@gestao_formatura/admin/*": ["./packages/admin/src/*"],
-      "@gestao_formatura/atirador": ["./packages/atirador/src"],
-      "@gestao_formatura/atirador/*": ["./packages/atirador/src/*"],
-      "@gestao_formatura/family-member": ["./packages/family-member/src"],
-      "@gestao_formatura/family-member/*": ["./packages/family-member/src/*"],
-      "@gestao_formatura/payment": ["./packages/payment/src"],
-      "@gestao_formatura/payment/*": ["./packages/payment/src/*"],
-      "@gestao_formatura/dashboard": ["./packages/dashboard/src"],
-      "@gestao_formatura/dashboard/*": ["./packages/dashboard/src/*"],
+      "@/*": [
+        "./src/*"
+      ],
+      "@packages/*": [
+        "./packages/*"
+      ],
+      "@gestao_formatura/shared": [
+        "./packages/shared/src"
+      ],
+      "@gestao_formatura/shared/*": [
+        "./packages/shared/src/*"
+      ],
+      "@gestao_formatura/auth": [
+        "./packages/auth/src"
+      ],
+      "@gestao_formatura/auth/*": [
+        "./packages/auth/src/*"
+      ],
+      "@gestao_formatura/admin": [
+        "./packages/admin/src"
+      ],
+      "@gestao_formatura/admin/*": [
+        "./packages/admin/src/*"
+      ],
+      "@gestao_formatura/atirador": [
+        "./packages/atirador/src"
+      ],
+      "@gestao_formatura/atirador/*": [
+        "./packages/atirador/src/*"
+      ],
+      "@gestao_formatura/family-member": [
+        "./packages/family-member/src"
+      ],
+      "@gestao_formatura/family-member/*": [
+        "./packages/family-member/src/*"
+      ],
+      "@gestao_formatura/payment": [
+        "./packages/payment/src"
+      ],
+      "@gestao_formatura/payment/*": [
+        "./packages/payment/src/*"
+      ],
+      "@gestao_formatura/dashboard": [
+        "./packages/dashboard/src"
+      ],
+      "@gestao_formatura/dashboard/*": [
+        "./packages/dashboard/src/*"
+      ],
       "@gestao_formatura/prisma/generated": [
         "./packages/shared/src/generated/client"
       ],
-      "@prisma/client": ["./packages/shared/src/generated/client"]
+      "@prisma/client": [
+        "./packages/shared/src/generated/client"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
