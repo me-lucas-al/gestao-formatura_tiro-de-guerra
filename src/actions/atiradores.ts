@@ -22,7 +22,7 @@ export async function getAtiradores(filters?: {
     if (!auth.success) return { error: auth.error };
 
     const atiradores = await AtiradoresService.findMany({
-      year: auth.admin.year,
+      year: auth.admin.year ?? new Date().getFullYear(),
       name: filters?.name || undefined,
       number: filters?.number ? parseInt(filters.number, 10) : undefined,
       status: filters?.status || undefined,
@@ -49,7 +49,7 @@ export async function createAtirador(data: CreateAtiradorData) {
 
     const exists = await AtiradoresService.findByNumber(
       number,
-      auth.admin.year,
+      auth.admin.year ?? new Date().getFullYear(),
     );
     if (exists) {
       return { error: `Já existe um atirador com o número ${number}.` };
@@ -58,7 +58,7 @@ export async function createAtirador(data: CreateAtiradorData) {
     const newAtirador = await AtiradoresService.create({
       name,
       number,
-      year: auth.admin.year,
+      year: auth.admin.year ?? new Date().getFullYear(),
       adminId: auth.admin.id,
       payment: payment
         ? {
@@ -143,7 +143,7 @@ export async function getTotalArrecadado() {
     const auth = await requireAuth();
     if (!auth.success) return { error: auth.error };
 
-    const total = await AtiradoresService.getTotalArrecadado(auth.admin.year);
+    const total = await AtiradoresService.getTotalArrecadado(auth.admin.year ?? new Date().getFullYear());
     return { success: true, data: total };
   } catch (error) {
     console.error("Erro ao calcular total arrecadado:", error);
