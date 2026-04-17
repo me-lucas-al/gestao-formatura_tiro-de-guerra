@@ -3,14 +3,14 @@
   "globalDependencies": ["tsconfig.json", ".env*", "**/.env*"],
   "tasks": {
     "build": {
-      "dependsOn": ["test", "^test", "^build"],
-      "outputs": [".next/**", "dist/**"],
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
       "cache": true
     },
     "test": {
       "dependsOn": ["^test"],
       "cache": true,
-      "outputs": ["coverage/**"]
+      "outputs": []
     },
     "lint": {
       "cache": true
