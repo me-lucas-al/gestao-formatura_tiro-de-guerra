@@ -8,7 +8,7 @@ import {
 import type { IAdminRepository } from "../interfaces/admin.repository.interface";
 
 export const findByName: IAdminRepository["findByName"] = async (name) => {
-  const admin = await prismaClient.admin.findUnique({
+  const admin = await prismaClient.admin.findFirst({
     where: { name },
     omit: { password: true },
   });
