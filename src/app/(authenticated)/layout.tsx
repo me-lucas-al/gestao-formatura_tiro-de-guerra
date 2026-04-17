@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { SessionProvider } from "@/hooks/use-session";
 import { getSession } from "@/actions/admin";
 import { redirect } from "next/navigation";
