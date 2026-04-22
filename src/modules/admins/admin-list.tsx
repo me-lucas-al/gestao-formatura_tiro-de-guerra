@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { AdminEntity } from "@/schemas/admin";
-import { Shield, Calendar, UserIcon, KeyRound, Trash2, Mail } from "lucide-react";
+import { Calendar, UserIcon, KeyRound, Trash2, Mail } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -77,7 +78,7 @@ export function AdminList({ admins, currentAdminId, isSuperAdmin }: AdminListPro
   if (admins.length === 0) {
     return (
       <div className="p-8 text-center bg-slate-50 border border-slate-200 rounded-sm">
-        <Shield className="mx-auto h-12 w-12 text-slate-300 mb-3" />
+        <Image src="/tg_logotipo.png" alt="Logo TG" width={48} height={48} className="mx-auto h-12 w-12 opacity-50 grayscale mb-3 object-contain" />
         <p className="text-slate-500 font-medium">
           Nenhum administrador encontrado.
         </p>

@@ -12,7 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ShieldCheck, FileKey } from "lucide-react";
+import { FileKey } from "lucide-react";
+import Image from "next/image";
 import { toast } from "sonner";
 
 interface CreateAdminFormProps {
@@ -46,7 +47,7 @@ export function CreateAdminForm({ isSuperAdmin }: CreateAdminFormProps) {
     <div className="bg-white rounded-sm border border-slate-200 shadow-sm overflow-hidden">
       <div className="bg-green-900 px-6 py-4">
         <div className="flex items-center gap-2">
-          <ShieldCheck className="h-5 w-5 text-white" />
+          <Image src="/tg_logotipo.png" alt="Logo do TG" width={20} height={20} className="h-5 w-5 object-contain" />
           <h2 className="text-lg font-bold uppercase text-white tracking-wider">
             Cadastrar Novo Administrador
           </h2>

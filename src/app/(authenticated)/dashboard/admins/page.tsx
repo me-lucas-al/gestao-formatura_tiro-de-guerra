@@ -2,7 +2,7 @@ import { CreateAdminForm } from "@/modules/admins/create-admin-form";
 import { AdminList } from "@/modules/admins/admin-list";
 import { AdminService } from "@/services/admin-service";
 import { BackButton } from "@/components/back-button";
-import { Shield } from "lucide-react";
+import Image from "next/image";
 import { Metadata } from "next";
 import { requireAuth } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -26,7 +26,7 @@ export default async function AdminsPage() {
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3">
             <div className="bg-green-900 p-2 rounded-sm text-white">
-              <Shield className="h-6 w-6" />
+              <Image src="/tg_logotipo.png" alt="Logo TG" width={24} height={24} className="h-6 w-6 object-contain" />
             </div>
             <div>
               <h1 className="text-sm font-semibold text-green-900 uppercase tracking-wider">
