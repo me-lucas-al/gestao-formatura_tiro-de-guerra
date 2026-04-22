@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { AdminEntity } from "@/schemas/admin";
-import { Calendar, UserIcon, KeyRound, Trash2, Mail } from "lucide-react";
+import { Calendar, UserIcon, KeyRound, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -128,12 +128,7 @@ export function AdminList({ admins, currentAdminId, isSuperAdmin }: AdminListPro
                     )}
                   </div>
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500">
-                    {admin.email && (
-                      <div className="flex items-center gap-1.5">
-                        <Mail className="h-4 w-4" />
-                        {admin.email}
-                      </div>
-                    )}
+
                     <div className="flex items-center gap-1.5">
                       <Calendar className="h-4 w-4" />
                       Ano: {admin.year}

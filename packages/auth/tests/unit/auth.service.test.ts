@@ -49,7 +49,7 @@ describe("AuthService", () => {
     vi.mocked(repository.findByName).mockResolvedValue({
       id: 1,
       name: "admin",
-      email: null,
+
       password: "hash",
       role: "ADMIN",
       year: 2026,
@@ -88,7 +88,7 @@ describe("AuthService", () => {
     vi.mocked(repository.findByName).mockResolvedValue({
       id: 10,
       name: "admin",
-      email: null,
+
       password: "hash",
       role: "SUPER_ADMIN",
       year: 2026,
@@ -192,7 +192,7 @@ describe("AuthService", () => {
     vi.mocked(repository.findById).mockResolvedValue({
       id: 7,
       name: "admin",
-      email: null,
+
       role: "ADMIN",
       year: 2026,
       createdAt: new Date(),

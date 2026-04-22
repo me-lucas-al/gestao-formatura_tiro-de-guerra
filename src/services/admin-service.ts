@@ -2,12 +2,7 @@ import { db } from "@/lib/prisma";
 import type { CreateAdminInput, AdminEntity } from "@/schemas/admin";
 
 export const AdminService = {
-  async findByEmail(email: string): Promise<AdminEntity | null> {
-    return db.admin.findFirst({
-      where: { email },
-      omit: { password: true },
-    });
-  },
+
 
   async findByName(name: string): Promise<AdminEntity | null> {
     return db.admin.findFirst({
@@ -19,7 +14,7 @@ export const AdminService = {
   async createAdmin(
     input: CreateAdminInput,
     passwordHash: string,
-    email: string,
+
   ): Promise<AdminEntity> {
     const latestAdmin = await db.admin.findFirst({
       orderBy: { id: "desc" },
@@ -30,7 +25,7 @@ export const AdminService = {
       data: {
         id: (latestAdmin?.id ?? 0) + 1,
         name: input.name,
-        email,
+
         role: input.role,
         year: input.year,
         password: passwordHash,
