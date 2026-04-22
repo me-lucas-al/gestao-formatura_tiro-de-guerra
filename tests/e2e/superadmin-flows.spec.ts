@@ -32,31 +32,104 @@ async function loginAsSuperAdmin(page: Page) {
   await expect(page).toHaveURL(/\/dashboard/);
 }
 
+async function openYearSelector(page: Page) {
+  const yearSelector = page.getByRole("combobox").first();
+  await expect(yearSelector).toBeVisible();
+  await yearSelector.click();
+  return yearSelector;
+}
+
+async function getAvailableYearValues(page: Page) {
+  const yearOptions = page.getByRole("option");
+  const totalOptions = await yearOptions.count();
+  const years: number[] = [];
+
+  for (let index = 0; index < totalOptions; index += 1) {
+    const label = ((await yearOptions.nth(index).textContent()) ?? "").trim();
+    const parsedYear = Number(label);
+
+    if (!Number.isNaN(parsedYear)) {
+      years.push(parsedYear);
+    }
+  }
+
+  return years;
+}
+
+async function selectYear(page: Page, year: number) {
+  const yearSelector = await openYearSelector(page);
+  await page.getByRole("option", { name: String(year), exact: true }).click();
+  await expect(yearSelector).toContainText(String(year));
+}
+
 test.describe("Super Admin — fluxos de permissao e multi-tenancy", () => {
-  test("troca de turma no YearSelector atualiza escopo ativo", async ({ page }) => {
+  test("YearSelector lista anos de admins e atiradores", async ({ page }) => {
     await loginAsSuperAdmin(page);
 
-    const yearSelector = page.getByRole("combobox").first();
-    await expect(yearSelector).toBeVisible();
-    await yearSelector.click();
+    await openYearSelector(page);
+    const years = await getAvailableYearValues(page);
+    test.skip(years.length < 2, "Ambiente de teste precisa de pelo menos duas turmas.");
 
     const yearOptions = page.getByRole("option");
-    const totalYears = await yearOptions.count();
-    test.skip(totalYears < 2, "Ambiente de teste precisa de pelo menos duas turmas.");
+    await yearOptions.first().click();
 
-    const currentYear = (await yearSelector.textContent())?.trim() ?? "";
-    const firstAlternativeYear =
-      ((await yearOptions.nth(0).textContent())?.trim() ?? "") === currentYear
-        ? yearOptions.nth(1)
-        : yearOptions.nth(0);
-    const selectedYear = ((await firstAlternativeYear.textContent()) ?? "").trim();
+    const has2025 = years.includes(2025);
+    const has2026 = years.includes(2026);
 
-    await firstAlternativeYear.click();
-    await expect(yearSelector).toContainText(selectedYear);
+    if (has2025) {
+      await openYearSelector(page);
+      await expect(page.getByRole("option", { name: "2025", exact: true })).toBeVisible();
+      await page.getByRole("option").first().click();
+    }
+
+    if (has2026) {
+      await openYearSelector(page);
+      await expect(page.getByRole("option", { name: "2026", exact: true })).toBeVisible();
+      await page.getByRole("option").first().click();
+    }
+  });
+
+  test("troca de turma no YearSelector atualiza escopo ativo", async ({ page }) => {
+    await loginAsSuperAdmin(page);
+    const yearSelector = await openYearSelector(page);
+    const years = await getAvailableYearValues(page);
+    test.skip(years.length < 2, "Ambiente de teste precisa de pelo menos duas turmas.");
+    const currentYear = Number(((await yearSelector.textContent()) ?? "").trim());
+    const selectedYear = years.find((year) => year !== currentYear);
+    test.skip(!selectedYear, "Nao foi possivel identificar um ano alternativo.");
+    await page.getByRole("option", { name: String(selectedYear), exact: true }).click();
+    await expect(yearSelector).toContainText(String(selectedYear));
 
     await page.goto("/dashboard/atiradores");
     await expect(page).toHaveURL(/\/dashboard\/atiradores/);
-    await expect(yearSelector).toContainText(selectedYear);
+    await expect(yearSelector).toContainText(String(selectedYear));
+  });
+
+  test("cria atirador no ano selecionado pelo superadmin", async ({ page }) => {
+    await loginAsSuperAdmin(page);
+    await openYearSelector(page);
+    const years = await getAvailableYearValues(page);
+    test.skip(years.length < 2, "Ambiente de teste precisa de pelo menos duas turmas.");
+
+    const preferredYear = years.includes(2026) ? 2026 : years[0];
+    await page.getByRole("option", { name: String(preferredYear), exact: true }).click();
+    await expect(page.getByRole("combobox").first()).toContainText(String(preferredYear));
+
+    const uniqueSuffix = Date.now();
+    const atiradorName = `Atirador E2E ${preferredYear} ${uniqueSuffix}`;
+    const atiradorNumber = String(900 + (uniqueSuffix % 90));
+
+    await page.getByRole("button", { name: /adicionar atirador/i }).click();
+    const createDialog = page.getByRole("dialog", { name: /adicionar atirador/i });
+    await expect(createDialog).toBeVisible();
+    await createDialog.getByLabel(/numero/i).fill(atiradorNumber);
+    await createDialog.getByLabel(/nome/i).fill(atiradorName);
+    await createDialog.getByRole("button", { name: /^salvar$/i }).click();
+
+    await expect(page.getByText(/atirador adicionado com sucesso/i)).toBeVisible({
+      timeout: 8000,
+    });
+    await expect(page.getByText(atiradorName)).toBeVisible();
   });
 
   test("remove admin comum com sucesso", async ({ page }) => {
@@ -86,13 +159,12 @@ test.describe("Super Admin — fluxos de permissao e multi-tenancy", () => {
   test("edita atirador de turma selecionada e persiste na tabela", async ({ page }) => {
     await loginAsSuperAdmin(page);
 
-    const yearSelector = page.getByRole("combobox").first();
-    if (await yearSelector.isVisible()) {
-      await yearSelector.click();
-      const yearOptions = page.getByRole("option");
-      if ((await yearOptions.count()) > 0) {
-        await yearOptions.first().click();
-      }
+    const years = await (async () => {
+      await openYearSelector(page);
+      return getAvailableYearValues(page);
+    })();
+    if (years.length > 0) {
+      await selectYear(page, years[0]);
     }
 
     await page.goto("/dashboard/atiradores");
