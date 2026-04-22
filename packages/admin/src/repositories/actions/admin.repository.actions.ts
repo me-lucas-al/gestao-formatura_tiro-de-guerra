@@ -50,8 +50,9 @@ export const updatePassword: IAdminRepository["updatePassword"] = async (
   });
 };
 
-export const findMany: IAdminRepository["findMany"] = async () => {
+export const findMany: IAdminRepository["findMany"] = async (year) => {
   const admins = await prismaClient.admin.findMany({
+    where: year ? { year } : undefined,
     omit: { password: true },
     orderBy: { createdAt: "desc" },
   });

@@ -75,8 +75,8 @@ export const deleteAdminController = async (
   return service.deleteAdmin(parsedInput.data, actor);
 };
 
-export const listAdminsController = async () => {
+export const listAdminsController = async (year?: number) => {
   const service = createAdminService();
 
-  return service.listAdmins();
+  return service.listAdmins(year);
 };

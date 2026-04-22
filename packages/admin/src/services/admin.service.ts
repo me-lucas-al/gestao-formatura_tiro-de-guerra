@@ -93,8 +93,8 @@ export class AdminService {
     return { success: true, message: "Administrador removido com sucesso." };
   }
 
-  async listAdmins(): Promise<ListAdminResult> {
-    const admins = await this.adminRepository.findMany();
+  async listAdmins(year?: number): Promise<ListAdminResult> {
+    const admins = await this.adminRepository.findMany(year);
 
     return { success: true, data: admins };
   }

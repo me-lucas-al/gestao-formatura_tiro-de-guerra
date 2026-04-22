@@ -8,5 +8,5 @@ export interface IAdminRepository {
   create(input: CreateAdminWithPasswordInput): Promise<AdminEntity>;
   deleteById(id: number): Promise<void>;
   updatePassword(id: number, passwordHash: string): Promise<void>;
-  findMany(): Promise<AdminEntity[]>;
+  findMany(year?: number): Promise<AdminEntity[]>;
 }

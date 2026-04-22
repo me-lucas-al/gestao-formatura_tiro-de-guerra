@@ -181,6 +181,22 @@ describe("AdminService — deleteAdmin", () => {
       error: "Você não pode remover a si mesmo.",
     });
   });
+
+  it("permite superadmin remover admin", async () => {
+    const repository = createRepositoryMock();
+    const service = new AdminService(repository);
+
+    const result = await service.deleteAdmin(
+      { adminId: 5 },
+      { id: 99, role: "SUPER_ADMIN", year: 2026 },
+    );
+
+    expect(result).toEqual({
+      success: true,
+      message: "Administrador removido com sucesso.",
+    });
+    expect(repository.deleteById).toHaveBeenCalledWith(5);
+  });
 });
 
 describe("AdminService — listAdmins", () => {
@@ -195,5 +211,34 @@ describe("AdminService — listAdmins", () => {
     if (result.success) {
       expect(result.data).toHaveLength(1);
     }
+  });
+
+  it("superadmin lista admins do ano selecionado (2025)", async () => {
+    const repository = createRepositoryMock();
+    vi.mocked(repository.findMany).mockResolvedValue([
+      makeAdmin({ id: 11, year: 2025 }),
+      makeAdmin({ id: 12, year: 2025 }),
+    ]);
+
+    const service = new AdminService(repository);
+    const result = await service.listAdmins(2025);
+
+    expect(result.success).toBe(true);
+    expect(repository.findMany).toHaveBeenCalledWith(2025);
+  });
+
+  it("superadmin muda para outro ano e reaplica filtro multi-tenant", async () => {
+    const repository = createRepositoryMock();
+    vi.mocked(repository.findMany)
+      .mockResolvedValueOnce([makeAdmin({ id: 21, year: 2025 })])
+      .mockResolvedValueOnce([makeAdmin({ id: 22, year: 2026 })]);
+
+    const service = new AdminService(repository);
+
+    await service.listAdmins(2025);
+    await service.listAdmins(2026);
+
+    expect(repository.findMany).toHaveBeenNthCalledWith(1, 2025);
+    expect(repository.findMany).toHaveBeenNthCalledWith(2, 2026);
   });
 });
