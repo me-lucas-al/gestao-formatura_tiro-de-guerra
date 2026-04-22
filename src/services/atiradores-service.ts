@@ -1,6 +1,7 @@
 import { db } from "@/lib/prisma";
 import type { AtiradorWithRelations } from "@packages/types";
 import type { PaymentStatus, PaymentMethod } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 export type AtiradorFilters = {
   year: number;
@@ -32,6 +33,16 @@ const includeRelations = {
 } as const;
 
 export const AtiradoresService = {
+  async alignAtiradorIdSequence() {
+    await db.$executeRawUnsafe(`
+      SELECT setval(
+        pg_get_serial_sequence('"Atirador"', 'id'),
+        COALESCE((SELECT MAX(id) FROM "Atirador"), 1),
+        true
+      );
+    `);
+  },
+
   async findMany(filters: AtiradorFilters): Promise<AtiradorWithRelations[]> {
     const where: Record<string, unknown> = { year: filters.year };
 
@@ -57,24 +68,48 @@ export const AtiradoresService = {
   },
 
   async create(data: CreateAtiradorInput) {
-    return db.atirador.create({
-      data: {
-        name: data.name,
-        number: data.number,
-        year: data.year,
-        adminId: data.adminId,
-        payment: data.payment
-          ? {
-              create: {
-                status: data.payment.status,
-                value: data.payment.value,
-                method: data.payment.method,
-              },
-            }
-          : undefined,
-      },
-      include: includeRelations,
-    });
+    const createData = {
+      name: data.name,
+      number: data.number,
+      year: data.year,
+      adminId: data.adminId,
+      payment: data.payment
+        ? {
+            create: {
+              status: data.payment.status,
+              value: data.payment.value,
+              method: data.payment.method,
+            },
+          }
+        : undefined,
+    };
+
+    try {
+      return await db.atirador.create({
+        data: createData,
+        include: includeRelations,
+      });
+    } catch (error) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError)) {
+        throw error;
+      }
+
+      if (error.code !== "P2002") {
+        throw error;
+      }
+
+      const target = String((error.meta as { target?: unknown })?.target ?? "");
+      if (!target.includes("id")) {
+        throw error;
+      }
+
+      await this.alignAtiradorIdSequence();
+
+      return db.atirador.create({
+        data: createData,
+        include: includeRelations,
+      });
+    }
   },
 
   async update(

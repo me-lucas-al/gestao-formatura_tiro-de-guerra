@@ -20,21 +20,14 @@ export async function setActiveYear(year: number) {
 }
 
 export async function getAvailableYears() {
-  const atiradorYears = await db.atirador.findMany({
-    select: { year: true },
-    distinct: ["year"],
-    orderBy: { year: "desc" },
-  });
-
-  const adminYears = await db.admin.findMany({
-    select: { year: true },
-    distinct: ["year"],
-    orderBy: { year: "desc" },
-  });
+  const yearRows = await db.$queryRaw<Array<{ year: number | null }>>`
+    SELECT DISTINCT year FROM "Atirador"
+    UNION
+    SELECT DISTINCT year FROM "Admin"
+  `;
 
   const mergedYears = new Set<number>([
-    ...atiradorYears.map((item) => item.year).filter(isNumberYear),
-    ...adminYears.map((item) => item.year).filter(isNumberYear),
+    ...yearRows.map((item) => item.year).filter(isNumberYear),
   ]);
 
   return Array.from(mergedYears).sort((first, second) => second - first);
