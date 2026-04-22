@@ -19,9 +19,11 @@ export async function getFamilyMembers(filters?: {
   try {
     const auth = await requireAuth();
     if (!auth.success) return { error: auth.error };
+    const scopedYear =
+      auth.admin.activeYear ?? auth.admin.year ?? new Date().getFullYear();
 
     const familyMembers = await FamilyMemberService.findMany({
-      year: auth.admin.year ?? new Date().getFullYear(),
+      year: scopedYear,
       name: filters?.name || undefined,
       status: filters?.status || undefined,
     });

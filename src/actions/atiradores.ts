@@ -20,9 +20,11 @@ export async function getAtiradores(filters?: {
   try {
     const auth = await requireAuth();
     if (!auth.success) return { error: auth.error };
+    const scopedYear =
+      auth.admin.activeYear ?? auth.admin.year ?? new Date().getFullYear();
 
     const atiradores = await AtiradoresService.findMany({
-      year: auth.admin.year ?? new Date().getFullYear(),
+      year: scopedYear,
       name: filters?.name || undefined,
       number: filters?.number ? parseInt(filters.number, 10) : undefined,
       status: filters?.status || undefined,
@@ -39,6 +41,8 @@ export async function createAtirador(data: CreateAtiradorData) {
   try {
     const auth = await requireAuth();
     if (!auth.success) return { error: auth.error };
+    const scopedYear =
+      auth.admin.activeYear ?? auth.admin.year ?? new Date().getFullYear();
 
     const parsed = createAtiradorSchema.safeParse(data);
     if (!parsed.success) {
@@ -49,7 +53,7 @@ export async function createAtirador(data: CreateAtiradorData) {
 
     const exists = await AtiradoresService.findByNumber(
       number,
-      auth.admin.year ?? new Date().getFullYear(),
+      scopedYear,
     );
     if (exists) {
       return { error: `Já existe um atirador com o número ${number}.` };
@@ -58,7 +62,7 @@ export async function createAtirador(data: CreateAtiradorData) {
     const newAtirador = await AtiradoresService.create({
       name,
       number,
-      year: auth.admin.year ?? new Date().getFullYear(),
+      year: scopedYear,
       adminId: auth.admin.id,
       payment: payment
         ? {
@@ -142,8 +146,10 @@ export async function getTotalArrecadado() {
   try {
     const auth = await requireAuth();
     if (!auth.success) return { error: auth.error };
+    const scopedYear =
+      auth.admin.activeYear ?? auth.admin.year ?? new Date().getFullYear();
 
-    const total = await AtiradoresService.getTotalArrecadado(auth.admin.year ?? new Date().getFullYear());
+    const total = await AtiradoresService.getTotalArrecadado(scopedYear);
     return { success: true, data: total };
   } catch (error) {
     console.error("Erro ao calcular total arrecadado:", error);
