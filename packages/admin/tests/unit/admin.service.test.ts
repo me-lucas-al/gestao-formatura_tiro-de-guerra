@@ -5,7 +5,7 @@ import { AdminService } from "../../src/services/admin.service";
 const makeAdmin = (overrides = {}) => ({
   id: 1,
   name: "admin",
-  email: null,
+
   role: "ADMIN" as const,
   year: 2026,
   createdAt: new Date(),

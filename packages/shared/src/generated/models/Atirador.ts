@@ -229,7 +229,7 @@ export type AtiradorGroupByOutputType = {
   _max: AtiradorMaxAggregateOutputType | null
 }
 
-type GetAtiradorGroupByPayload<T extends AtiradorGroupByArgs> = Prisma.PrismaPromise<
+export type GetAtiradorGroupByPayload<T extends AtiradorGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<AtiradorGroupByOutputType, T['by']> &
       {

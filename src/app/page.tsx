@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, User, Lock, Target, Loader2 } from "lucide-react";
+import { User, Lock, Target, Loader2 } from "lucide-react";
+import Image from "next/image";
 import { loginAdmin } from "@/actions/login";
 
 import { Button } from "@/components/ui/button";
@@ -59,8 +60,8 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-md">
         {/* Military Branding Header */}
         <div className="mb-8 text-center space-y-2">
-          <div className="inline-flex items-center justify-center p-3 rounded-full bg-[oklch(0.35_0.08_143)] text-white mb-2 shadow-lg ring-4 ring-[oklch(0.35_0.08_143)]/20">
-            <ShieldCheck className="size-8" />
+          <div className="inline-flex items-center justify-center p-3 rounded-full bg-white mb-2 shadow-lg ring-4 ring-white/50 border-2 border-[oklch(0.35_0.08_143)]">
+            <Image src="/tg_logo_removed.png" alt="Logo TG" width={40} height={40} className="size-10 object-contain" />
           </div>
           <h1 className="text-2xl font-black tracking-tighter text-[oklch(0.25_0.05_143)] dark:text-[oklch(0.9_0.02_143)] uppercase font-mono">
             Tiro de Guerra
@@ -79,7 +80,7 @@ export default function LoginPage() {
               Acesso ao Sistema
             </CardTitle>
             <CardDescription className="text-xs uppercase tracking-wider font-medium">
-              Identifique-se para prosseguir com a missão
+              Identifique-se para prosseguir
             </CardDescription>
           </CardHeader>
 
@@ -147,12 +148,6 @@ export default function LoginPage() {
               </Button>
             </form>
           </CardContent>
-
-          <div className="px-6 py-4 bg-muted/50 border-t border-[oklch(0.35_0.08_143)]/10 text-center">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-mono">
-              Confidencial • Nível de Acesso Restrito
-            </span>
-          </div>
         </Card>
       </div>
     </div>

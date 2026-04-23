@@ -5,7 +5,7 @@ export const AdminRoleSchema = z.enum(["ADMIN", "SUPER_ADMIN"]);
 export const AdminEntitySchema = z.object({
   id: z.number().int().positive(),
   name: z.string().trim().min(3),
-  email: z.string().email().nullable().optional(),
+
   role: AdminRoleSchema,
   year: z.number().int().min(2020).max(2100),
   createdAt: z.date(),

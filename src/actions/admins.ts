@@ -16,17 +16,7 @@ export type ActionResponse<T = unknown> = {
   data?: T;
 };
 
-function buildAdminEmail(name: string, year: number): string {
-  const normalizedName = name
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, ".")
-    .replace(/^\.|\.$/g, "")
-    .slice(0, 40);
 
-  return `${normalizedName}.${Date.now()}.${year}@tg02009.eb.mil.br`;
-}
 
 export async function createAdmin(formData: FormData): Promise<ActionResponse> {
   const auth = await requireAuth();
@@ -42,7 +32,7 @@ export async function createAdmin(formData: FormData): Promise<ActionResponse> {
 
   const validatedFields = CreateAdminSchema.safeParse({
     name: data.name,
-    email: data.email,
+
     role: roleValue,
     year: yearValue,
   });
@@ -74,12 +64,9 @@ export async function createAdmin(formData: FormData): Promise<ActionResponse> {
       };
     }
     const passwordHash = await bcrypt.hash(DEFAULT_PASSWORD, 10);
-    const adminEmail = buildAdminEmail(name, year ?? new Date().getFullYear());
-
     const newAdmin = await AdminService.createAdmin(
       { name, role, year },
       passwordHash,
-      adminEmail,
     );
 
     revalidatePath("/dashboard/admins");

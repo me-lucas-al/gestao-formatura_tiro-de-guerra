@@ -13,13 +13,6 @@ export const AdminService = {
     `);
   },
 
-  async findByEmail(email: string): Promise<AdminEntity | null> {
-    return db.admin.findFirst({
-      where: { email },
-      omit: { password: true },
-    });
-  },
-
   async findByName(name: string): Promise<AdminEntity | null> {
     return db.admin.findFirst({
       where: { name },
@@ -30,11 +23,10 @@ export const AdminService = {
   async createAdmin(
     input: CreateAdminInput,
     passwordHash: string,
-    email: string,
+
   ): Promise<AdminEntity> {
     const createData = {
       name: input.name,
-      email,
       role: input.role,
       year: input.year,
       password: passwordHash,

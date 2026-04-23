@@ -6,7 +6,8 @@ import {
   AtiradorWithRelations,
   FamilyMemberWithRelations,
 } from "@packages/types";
-import { Shield, Settings, LogOut } from "lucide-react";
+import { Settings, LogOut } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { logout } from "@/actions/login";
@@ -40,8 +41,8 @@ export default function DashboardHeader({
       <header className="border-b-2 border-green-900 pb-6 mb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 mb-2">
-            <div className="bg-green-900 p-2 rounded-sm text-white">
-              <Shield className="h-6 w-6" />
+            <div className="bg-white p-1.5 rounded-md shadow-sm border-2 border-green-900">
+              <Image src="/tg_logo_removed.png" alt="Logo TG" width={28} height={28} className="h-7 w-7 object-contain" />
             </div>
             <div>
               <h1 className="text-sm font-semibold text-green-900 uppercase tracking-wider">
