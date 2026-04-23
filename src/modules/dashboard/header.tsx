@@ -41,8 +41,8 @@ export default function DashboardHeader({
       <header className="border-b-2 border-green-900 pb-6 mb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 mb-2">
-            <div className="bg-green-900 p-2 rounded-sm text-white">
-              <Image src="/tg_logotipo.png" alt="Logo TG" width={24} height={24} className="h-6 w-6 object-contain" />
+            <div className="bg-white p-1.5 rounded-md shadow-sm border border-slate-200">
+              <Image src="/tg_logo_removed.png" alt="Logo TG" width={28} height={28} className="h-7 w-7 object-contain" />
             </div>
             <div>
               <h1 className="text-sm font-semibold text-green-900 uppercase tracking-wider">

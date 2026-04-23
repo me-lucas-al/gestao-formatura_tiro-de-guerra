@@ -60,8 +60,8 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-md">
         {/* Military Branding Header */}
         <div className="mb-8 text-center space-y-2">
-          <div className="inline-flex items-center justify-center p-3 rounded-full bg-[oklch(0.35_0.08_143)] text-white mb-2 shadow-lg ring-4 ring-[oklch(0.35_0.08_143)]/20">
-            <Image src="/tg_logotipo.png" alt="Logo TG" width={32} height={32} className="size-8 object-contain drop-shadow-md" />
+          <div className="inline-flex items-center justify-center p-3 rounded-full bg-white mb-2 shadow-lg ring-4 ring-white/50 border border-[oklch(0.35_0.08_143)]/10">
+            <Image src="/tg_logo_removed.png" alt="Logo TG" width={40} height={40} className="size-10 object-contain" />
           </div>
           <h1 className="text-2xl font-black tracking-tighter text-[oklch(0.25_0.05_143)] dark:text-[oklch(0.9_0.02_143)] uppercase font-mono">
             Tiro de Guerra
