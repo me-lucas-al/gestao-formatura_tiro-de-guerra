@@ -25,7 +25,7 @@ export default async function AdminsPage() {
       <header className="border-b-2 border-green-900 pb-6">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3">
-            <div className="bg-white p-1.5 rounded-md shadow-sm border border-slate-200">
+            <div className="bg-white p-1.5 rounded-md shadow-sm border-2 border-green-900">
               <Image src="/tg_logo_removed.png" alt="Logo TG" width={28} height={28} className="h-7 w-7 object-contain" />
             </div>
             <div>

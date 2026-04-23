@@ -78,7 +78,7 @@ export function AdminList({ admins, currentAdminId, isSuperAdmin }: AdminListPro
   if (admins.length === 0) {
     return (
       <div className="p-8 text-center bg-slate-50 border border-slate-200 rounded-sm">
-        <div className="mx-auto h-16 w-16 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-200 mb-3 grayscale opacity-70">
+        <div className="mx-auto h-16 w-16 bg-white rounded-full flex items-center justify-center shadow-sm border-2 border-green-900 mb-3 grayscale opacity-70">
           <Image src="/tg_logo_removed.png" alt="Logo TG" width={32} height={32} className="h-8 w-8 object-contain" />
         </div>
         <p className="text-slate-500 font-medium">

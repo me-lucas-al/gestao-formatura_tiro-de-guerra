@@ -47,7 +47,7 @@ export function CreateAdminForm({ isSuperAdmin }: CreateAdminFormProps) {
     <div className="bg-white rounded-sm border border-slate-200 shadow-sm overflow-hidden">
       <div className="bg-green-900 px-6 py-4">
         <div className="flex items-center gap-2">
-          <div className="bg-white p-1 rounded-sm shadow-sm ring-1 ring-black/5">
+          <div className="bg-white p-1 rounded-sm shadow-sm border-2 border-green-900">
             <Image src="/tg_logo_removed.png" alt="Logo do TG" width={20} height={20} className="h-5 w-5 object-contain" />
           </div>
           <h2 className="text-lg font-bold uppercase text-white tracking-wider">
