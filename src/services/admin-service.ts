@@ -1,7 +1,18 @@
 import { db } from "@/lib/prisma";
 import type { CreateAdminInput, AdminEntity } from "@/schemas/admin";
+import { Prisma } from "@prisma/client";
 
 export const AdminService = {
+  async alignAdminIdSequence() {
+    await db.$executeRawUnsafe(`
+      SELECT setval(
+        pg_get_serial_sequence('"Admin"', 'id'),
+        COALESCE((SELECT MAX(id) FROM "Admin"), 1),
+        true
+      );
+    `);
+  },
+
   async findByEmail(email: string): Promise<AdminEntity | null> {
     return db.admin.findFirst({
       where: { email },
@@ -21,22 +32,40 @@ export const AdminService = {
     passwordHash: string,
     email: string,
   ): Promise<AdminEntity> {
-    const latestAdmin = await db.admin.findFirst({
-      orderBy: { id: "desc" },
-      select: { id: true },
-    });
+    const createData = {
+      name: input.name,
+      email,
+      role: input.role,
+      year: input.year,
+      password: passwordHash,
+    };
 
-    return db.admin.create({
-      data: {
-        id: (latestAdmin?.id ?? 0) + 1,
-        name: input.name,
-        email,
-        role: input.role,
-        year: input.year,
-        password: passwordHash,
-      },
-      omit: { password: true },
-    });
+    try {
+      return await db.admin.create({
+        data: createData,
+        omit: { password: true },
+      });
+    } catch (error) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError)) {
+        throw error;
+      }
+
+      if (error.code !== "P2002") {
+        throw error;
+      }
+
+      const target = String((error.meta as { target?: unknown })?.target ?? "");
+      if (!target.includes("id")) {
+        throw error;
+      }
+
+      await this.alignAdminIdSequence();
+
+      return db.admin.create({
+        data: createData,
+        omit: { password: true },
+      });
+    }
   },
 
   async deleteAdmin(id: number): Promise<void> {

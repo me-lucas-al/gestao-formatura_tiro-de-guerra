@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcrypt";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { CreateAdminSchema } from "@/schemas/admin";
 import { AdminService } from "@/services/admin-service";
 import { requireAuth, requireSuperAdmin } from "@/lib/auth";
@@ -89,6 +90,24 @@ export async function createAdmin(formData: FormData): Promise<ActionResponse> {
       data: newAdmin,
     };
   } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      const target = String((error.meta as { target?: unknown })?.target ?? "");
+
+      if (target.includes("name") || target.includes("year")) {
+        return {
+          success: false,
+          error: "Já existe um administrador com este nome de usuário nesta turma.",
+        };
+      }
+
+      if (target.includes("id")) {
+        return {
+          success: false,
+          error: "Conflito de identificador ao criar administrador. Tente novamente.",
+        };
+      }
+    }
+
     console.error("Erro ao criar administrador:", error);
     return {
       success: false,
