@@ -99,7 +99,8 @@ export const AtiradoresService = {
       }
 
       const target = String((error.meta as { target?: unknown })?.target ?? "");
-      if (!target.includes("id")) {
+      const isIdError = target.includes("id") || error.message.includes("`id`") || error.message.includes("'id'");
+      if (!isIdError) {
         throw error;
       }
 

@@ -26,7 +26,7 @@ export const AdminService = {
 
   ): Promise<AdminEntity> {
     const createData = {
-      name: input.name,
+      name: input.name.toUpperCase(),
       role: input.role,
       year: input.year,
       password: passwordHash,
@@ -47,7 +47,8 @@ export const AdminService = {
       }
 
       const target = String((error.meta as { target?: unknown })?.target ?? "");
-      if (!target.includes("id")) {
+      const isIdError = target.includes("id") || error.message.includes("`id`") || error.message.includes("'id'");
+      if (!isIdError) {
         throw error;
       }
 
