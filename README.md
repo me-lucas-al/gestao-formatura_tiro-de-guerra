@@ -1,4 +1,4 @@
-# 🎯 Gestão de Formatura — Tiro de Guerra
+# 🎯 Gestão de Formatura - Tiro de Guerra
 
 Sistema de gestão financeira da formatura do Tiro de Guerra. Permite controlar pagamentos de atiradores e familiares, com painel administrativo, autenticação por função (ADMIN / SUPERADMIN) e relatórios de arrecadação.
 
